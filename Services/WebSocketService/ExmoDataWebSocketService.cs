@@ -75,7 +75,7 @@ namespace exmo_trader_bot_console.Services.WebSocketService
 
         private async Task StartPrivateConnection()
         {
-            await _privateWebSocketService.Connect(_settings.Api.ConnectionUrlPublic);
+            await _privateWebSocketService.Connect(_settings.Api.ConnectionUrlPrivate);
             await SendPrivate();
             _privateWebSocketService.StartReceiveStream();
         }
