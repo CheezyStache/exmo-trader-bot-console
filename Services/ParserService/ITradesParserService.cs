@@ -7,9 +7,7 @@ using exmo_trader_bot_console.Models.TradingData;
 
 namespace exmo_trader_bot_console.Services.ParserService
 {
-    public interface IParserService<out T> where T: class
+    public interface ITradesParserService: IParserService<Trade>
     {
-        IEnumerable<T> ParseResponse(string response);
-        IObservable<T> ParserStream(IObservable<string> responseStream);
     }
 }

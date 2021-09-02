@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace exmo_trader_bot_console.Models.Exmo
+namespace exmo_trader_bot_console.Models.TradingData
 {
     public class TradingPair
     {
