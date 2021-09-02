@@ -2,6 +2,7 @@
 using System.Reactive.Linq;
 using exmo_trader_bot_console.Models.Internal;
 using exmo_trader_bot_console.Models.PlatformAPI;
+using exmo_trader_bot_console.Services.DataStorageService;
 using exmo_trader_bot_console.Services.ParserService;
 using exmo_trader_bot_console.Services.SettingsService;
 using exmo_trader_bot_console.Services.WebSocketService;
@@ -17,6 +18,9 @@ namespace exmo_trader_bot_console
             IDataWebSocketService webSocketService = new ExmoDataWebSocketService(settingsService);
             IEventParserService eventParserService = new ExmoEventsParserService();
             ITradesParserService tradesParserService = new ExmoTradesParserService();
+            IDataStorageService dataStorageService = new DataStorageService();
+
+            dataStorageService.TradesStream.Subscribe(t => Console.WriteLine(t.Price));
 
             var webSocketStream = webSocketService.ConnectToApi(APIType.Public);
             var responsesWithEventsStream = eventParserService.ParserStream(webSocketStream);
@@ -25,7 +29,9 @@ namespace exmo_trader_bot_console
                 .Select(r => r.Response);
 
             tradesParserService.ParserStream(updatesStream)
-                .Subscribe(Console.WriteLine);
+                .Subscribe(dataStorageService.AddTrade);
+
+
 
             Console.ReadKey();
         }
