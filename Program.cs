@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reactive.Linq;
 using exmo_trader_bot_console.Models.Internal;
 using exmo_trader_bot_console.Models.PlatformAPI;
@@ -19,8 +20,16 @@ namespace exmo_trader_bot_console
             IEventParserService eventParserService = new ExmoEventsParserService();
             ITradesParserService tradesParserService = new ExmoTradesParserService();
             IDataStorageService dataStorageService = new DataStorageService();
+            DecisionSystems.CandleSignals.Services.DataStorageService.IDataStorageService candlesDataStorage =
+                new DecisionSystems.CandleSignals.Services.DataStorageService.DataStorageService(settingsService);
 
-            dataStorageService.TradesStream.Subscribe(t => Console.WriteLine(t.Price));
+            candlesDataStorage.TradeCandlesStream.Subscribe(t =>
+            {
+                Console.WriteLine("-------");
+                foreach (var candle in t)
+                    Console.WriteLine("[ " + string.Join(", ",candle.Select(c => c.Amount.ToString())) + " ]");
+            });
+            candlesDataStorage.ConnectToTrades(dataStorageService.TradesStream);
 
             var webSocketStream = webSocketService.ConnectToApi(APIType.Public);
             var responsesWithEventsStream = eventParserService.ParserStream(webSocketStream);

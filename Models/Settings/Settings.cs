@@ -11,5 +11,6 @@ namespace exmo_trader_bot_console.Models.Settings
     {
         public PlatformApiSettings Api { get; set; }
         public TradingPairSettings[] Pairs { get; set; }
+        public CandleSignalsSystemSettings CandleSystem { get; set; }
     }
 }
