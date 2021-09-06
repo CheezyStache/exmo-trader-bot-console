@@ -9,6 +9,8 @@ namespace exmo_trader_bot_console.Models.TradingData
     public enum TradeType
     {
         Buy,
-        Sell
+        Sell,
+        MarketBuy,
+        MarketSell
     }
 }
