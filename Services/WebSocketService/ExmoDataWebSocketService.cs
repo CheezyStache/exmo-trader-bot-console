@@ -16,9 +16,9 @@ namespace exmo_trader_bot_console.Services.WebSocketService
         private IWebSocketService _privateWebSocketService;
         private IWebSocketService _publicWebSocketService;
 
-        public ExmoDataWebSocketService(ISettingsService settingsService)
+        public ExmoDataWebSocketService(Settings settings)
         {
-            _settings = settingsService.GetSettings();
+            _settings = settings;
         }
 
         public IObservable<string> ConnectToApi(APIType type)

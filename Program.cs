@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Reactive.Linq;
-using exmo_trader_bot_console.Models.Internal;
-using exmo_trader_bot_console.Models.PlatformAPI;
-using exmo_trader_bot_console.Services.DataStorageService;
-using exmo_trader_bot_console.Services.ParserService;
+using exmo_trader_bot_console.BusinessProcess;
+using exmo_trader_bot_console.BusinessProcess.Exmo;
 using exmo_trader_bot_console.Services.SettingsService;
-using exmo_trader_bot_console.Services.WebSocketService;
 
 namespace exmo_trader_bot_console
 {
@@ -15,32 +12,14 @@ namespace exmo_trader_bot_console
         static void Main(string[] args)
         {
             Console.WriteLine("Trader Bot is started!");
-            ISettingsService settingsService = new SettingsService();
-            IDataWebSocketService webSocketService = new ExmoDataWebSocketService(settingsService);
-            IEventParserService eventParserService = new ExmoEventsParserService();
-            ITradesParserService tradesParserService = new ExmoTradesParserService();
-            IDataStorageService dataStorageService = new DataStorageService();
-            DecisionSystems.CandleSignals.Services.DataStorageService.IDataStorageService candlesDataStorage =
-                new DecisionSystems.CandleSignals.Services.DataStorageService.DataStorageService(settingsService);
+            var settingsService = new SettingsService();
+            var settings = settingsService.GetSettings();
 
-            candlesDataStorage.TradeCandlesStream.Subscribe(t =>
-            {
-                Console.WriteLine("-------");
-                foreach (var candle in t)
-                    Console.WriteLine("[ " + string.Join(", ",candle.Select(c => c.Amount.ToString())) + " ]");
-            });
-            candlesDataStorage.ConnectToTrades(dataStorageService.TradesStream);
+            IEventGatherProcess eventGatherProcess = new ExmoEventGatherProcess(settings);
+            IDataStorageFillerProcess dataStorageFillerProcess =
+                new ExmoDataStorageFillerProcess(eventGatherProcess.EventsStream);
 
-            var webSocketStream = webSocketService.ConnectToApi(APIType.Public);
-            var responsesWithEventsStream = eventParserService.ParserStream(webSocketStream);
-
-            var updatesStream = responsesWithEventsStream.Where(r => r.Event == ResponseEvent.Update)
-                .Select(r => r.Response);
-
-            tradesParserService.ParserStream(updatesStream)
-                .Subscribe(dataStorageService.AddTrade);
-
-
+            dataStorageFillerProcess.TradesStream.Subscribe(Console.WriteLine);
 
             Console.ReadKey();
         }
