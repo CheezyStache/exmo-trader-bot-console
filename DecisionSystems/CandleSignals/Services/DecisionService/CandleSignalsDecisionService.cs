@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
-using exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.DataStorageService;
 using exmo_trader_bot_console.Models.OrderData;
 using exmo_trader_bot_console.Models.TradingData;
 
@@ -16,10 +15,10 @@ namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.Decisio
 
         private readonly ISubject<OrderDecision> _decisionsSubject;
 
-        public CandleSignalsDecisionService(IDataStorageService dataStorageService)
+        public CandleSignalsDecisionService(IObservable<Trade[][]> candles)
         {
             _decisionsSubject = new Subject<OrderDecision>();
-            dataStorageService.TradeCandlesStream.Subscribe(MakeDecision);
+            candles.Subscribe(MakeDecision);
         }
 
         private void MakeDecision(Trade[][] candles)

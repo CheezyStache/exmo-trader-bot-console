@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using exmo_trader_bot_console.Models.OrderData;
 
-namespace exmo_trader_bot_console.Services.SerializerService
+namespace exmo_trader_bot_console.Services.RequestService
 {
-    interface IOrderSerializerService: ISerializerService<OrderDecision>
+    interface IOrderRequestService: IRequestService<OrderDecision>
     {
     }
 }

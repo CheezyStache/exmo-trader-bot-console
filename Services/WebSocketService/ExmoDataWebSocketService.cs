@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using exmo_trader_bot_console.Models.PlatformAPI;
 using exmo_trader_bot_console.Models.Settings;
-using exmo_trader_bot_console.Services.SettingsService;
 
 namespace exmo_trader_bot_console.Services.WebSocketService
 {
@@ -94,15 +92,9 @@ namespace exmo_trader_bot_console.Services.WebSocketService
         private async Task SendPrivate()
         {
             var apiKey = _settings.Api.Key;
-            var secretKey = _settings.Api.SecretKey;
             var nonce = DateTime.Now.Ticks;
 
-            var sign = "";
-            using (HMACSHA512 hmac = new HMACSHA512(Encoding.UTF8.GetBytes(secretKey)))
-            {
-                byte[] b = hmac.ComputeHash(Encoding.UTF8.GetBytes(apiKey + Convert.ToString(nonce)));
-                sign = Convert.ToBase64String(b);
-            }
+            var sign = _settings.Api.GetSign(nonce);
 
             var loginCommand =
                 $"{{\"id\":1,\"method\":\"login\",\"api_key\":\"{apiKey}\",\"sign\":\"{sign}\",\"nonce\":{nonce:D}}}";

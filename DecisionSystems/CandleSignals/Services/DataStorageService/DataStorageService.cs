@@ -5,8 +5,8 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
+using exmo_trader_bot_console.Models.Settings;
 using exmo_trader_bot_console.Models.TradingData;
-using exmo_trader_bot_console.Services.SettingsService;
 
 namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.DataStorageService
 {
@@ -18,11 +18,11 @@ namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.DataSto
         private readonly ISubject<Trade[][]> _tradeCandlesSubject;
         private IObservable<IList<Trade>> _bufferStream;
 
-        public DataStorageService(ISettingsService settingsService)
+        public DataStorageService(Settings settings)
         {
-            var settings = settingsService.GetSettings().CandleSystem;
-            _candlesCount = settings.CandleCount;
-            _candlesMinutes = settings.CandleMinutes;
+            var candleSystemSettings = settings.CandleSystem;
+            _candlesCount = candleSystemSettings.CandleCount;
+            _candlesMinutes = candleSystemSettings.CandleMinutes;
 
             TradeCandles = new Trade[_candlesCount][];
             for (int i = 0; i < _candlesCount; i++)

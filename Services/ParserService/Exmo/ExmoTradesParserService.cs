@@ -10,11 +10,16 @@ using exmo_trader_bot_console.Models.Exmo;
 using exmo_trader_bot_console.Models.TradingData;
 using TraderBot.Models.Exmo;
 
-namespace exmo_trader_bot_console.Services.ParserService
+namespace exmo_trader_bot_console.Services.ParserService.Exmo
 {
     public class ExmoTradesParserService: ITradesParserService
     {
-        public IEnumerable<Trade> ParseResponse(string response)
+        public IObservable<Trade> ParserStream(IObservable<string> responseStream)
+        {
+            return responseStream.SelectMany(ParseResponse);
+        }
+
+        private IEnumerable<Trade> ParseResponse(string response)
         {
             var exmoResponse = JsonSerializer.Deserialize<ExmoSocketResponse<ExmoTrades[]>>(response,
                 new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
@@ -22,11 +27,6 @@ namespace exmo_trader_bot_console.Services.ParserService
             var topic = exmoResponse.topic;
 
             return exmoResponse.data.Select(d => GetByExmoTrade(d, topic));
-        }
-
-        public IObservable<Trade> ParserStream(IObservable<string> responseStream)
-        {
-            return responseStream.SelectMany(ParseResponse);
         }
 
         private Trade GetByExmoTrade(ExmoTrades exmoTrade, string topic)

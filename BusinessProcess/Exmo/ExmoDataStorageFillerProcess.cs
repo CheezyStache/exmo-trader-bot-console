@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using exmo_trader_bot_console.Models.Internal;
 using exmo_trader_bot_console.Services.DataStorageService;
 using exmo_trader_bot_console.Services.EventRouterService;
-using exmo_trader_bot_console.Services.ParserService;
+using exmo_trader_bot_console.Services.ParserService.Exmo;
 
 namespace exmo_trader_bot_console.BusinessProcess.Exmo
 {

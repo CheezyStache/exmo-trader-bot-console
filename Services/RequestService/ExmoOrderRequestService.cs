@@ -1,32 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using exmo_trader_bot_console.Models.Exmo;
 using exmo_trader_bot_console.Models.OrderData;
 using exmo_trader_bot_console.Models.TradingData;
+using RestSharp;
 
-namespace exmo_trader_bot_console.Services.SerializerService
+namespace exmo_trader_bot_console.Services.RequestService
 {
-    class ExmoOrderSerializerService: IOrderSerializerService
+    class ExmoOrderRequestService: IOrderRequestService
     {
-        public string SerializeRequest(OrderDecision request)
-        {
-            var type = SerializeTradeType(request.Type);
-            var pair = SerializePair(request.Pair);
-
-            var exmoOrderCreate = new ExmoOrderCreate(pair, request.Quantity, request.Price, type);
-
-            return JsonSerializer.Serialize(exmoOrderCreate,
-                new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase});
-        }
-
-        public IObservable<string> SerializerStream(IObservable<OrderDecision> requestStream)
+        public IObservable<RestRequest> RequestStream(IObservable<OrderDecision> requestStream)
         {
             return requestStream.Select(SerializeRequest);
+        }
+
+        private RestRequest SerializeRequest(OrderDecision orderDecision)
+        {
+            var type = SerializeTradeType(orderDecision.Type);
+            var pair = SerializePair(orderDecision.Pair);
+
+            var request = new RestRequest();
+            request.AddParameter("pair", pair);
+            request.AddParameter("quantity", orderDecision.Quantity.ToString(CultureInfo.InvariantCulture));
+            request.AddParameter("price", orderDecision.Price.ToString(CultureInfo.InvariantCulture));
+            request.AddParameter("type", type);
+
+            return request;
         }
 
         private string SerializeTradeType(TradeType type)

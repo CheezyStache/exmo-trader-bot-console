@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using exmo_trader_bot_console.Models.Settings;
-using exmo_trader_bot_console.Services.ParserService;
+using exmo_trader_bot_console.Services.ParserService.Exmo;
 using exmo_trader_bot_console.Services.WebSocketService;
 
 namespace exmo_trader_bot_console.BusinessProcess.Exmo

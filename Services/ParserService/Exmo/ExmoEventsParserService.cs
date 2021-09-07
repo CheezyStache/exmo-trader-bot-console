@@ -8,15 +8,10 @@ using System.Threading.Tasks;
 using exmo_trader_bot_console.Models.Exmo;
 using exmo_trader_bot_console.Models.Internal;
 
-namespace exmo_trader_bot_console.Services.ParserService
+namespace exmo_trader_bot_console.Services.ParserService.Exmo
 {
     public class ExmoEventsParserService: IEventParserService
     {
-        public IEnumerable<ResponseWithEvent> ParseResponse(string response)
-        {
-            return new[] { ParseResponseWithEvent(response) };
-        }
-
         public IObservable<ResponseWithEvent> ParserStream(IObservable<string> responseStream)
         {
             return responseStream.Select(ParseResponseWithEvent);
