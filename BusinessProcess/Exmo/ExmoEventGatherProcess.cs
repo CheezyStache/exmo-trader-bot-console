@@ -3,20 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using exmo_trader_bot_console.Models.Internal;
+using exmo_trader_bot_console.Models.PlatformAPI;
 using exmo_trader_bot_console.Models.Settings;
+using exmo_trader_bot_console.Services.ParserService;
 using exmo_trader_bot_console.Services.ParserService.Exmo;
 using exmo_trader_bot_console.Services.WebSocketService;
 
 namespace exmo_trader_bot_console.BusinessProcess.Exmo
 {
-    class ExmoEventGatherProcess: EventGatherProcess, IEventGatherProcess
+    class ExmoEventGatherProcess: IEventGatherProcess
     {
+        public IObservable<ResponseWithEvent> EventsStream { get; }
+
         public ExmoEventGatherProcess(Settings settings)
         {
-            var dataWebSocketService = new ExmoDataWebSocketService(settings);
-            var eventParserService = new ExmoEventsParserService();
+            IDataWebSocketService dataWebSocketService = new ExmoDataWebSocketService(settings);
+            IEventParserService eventParserService = new ExmoEventsParserService();
 
-            ConstructProcess(dataWebSocketService, eventParserService);
+            var webSocketStream = dataWebSocketService.ConnectToApi(APIType.Public);
+            EventsStream = eventParserService.ParserStream(webSocketStream);
         }
     }
 }

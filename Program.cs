@@ -27,16 +27,16 @@ namespace exmo_trader_bot_console
 
             dataStorageFillerProcess.TradesStream.Subscribe(Console.WriteLine);
 
-            IDataStorageService dataStorageService = new DataStorageService(settings);
-            dataStorageService.ConnectToTrades(dataStorageFillerProcess.TradesStream);
-            IDecisionService decisionService = new CandleSignalsDecisionService(dataStorageService.TradeCandlesStream);
+            IDecisionProcess decisionProcess =
+                new ExmoCandleDecisionProcess(dataStorageFillerProcess.TradesStream, settings);
+
             IOrderRequestService orderRequestService = new ExmoOrderRequestService();
-            var requests = orderRequestService.RequestStream(decisionService.DecisionsStream);
+            var requests = orderRequestService.RequestStream(decisionProcess.DecisionsStream);
             IRestService restService = new ExmoRestService(settings);
             var responses = restService.ResponseStream(requests);
             var orderResponseParser = new ExmoOrderResponseParserService();
             var orderResponses = orderResponseParser.ParserStream(responses.Select(r => r.Content));
-            var orderStream = decisionService.DecisionsStream.CombineLatest(orderResponses, (request, response) =>
+            var orderStream = decisionProcess.DecisionsStream.CombineLatest(orderResponses, (request, response) =>
             {
                 OrderResult orderResult = request as OrderResult;
                 orderResult.Result = response;
