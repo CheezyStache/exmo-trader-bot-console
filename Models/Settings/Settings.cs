@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using exmo_trader_bot_console.DecisionSystems.CandleSignals.Models;
 
 namespace exmo_trader_bot_console.Models.Settings
 {
@@ -10,6 +11,6 @@ namespace exmo_trader_bot_console.Models.Settings
     {
         public PlatformApiSettings Api { get; set; }
         public TradingPairSettings[] Pairs { get; set; }
-        public CandleSignalsSystemSettings CandleSystem { get; set; }
+        public CandleSignalsSettings CandleSystem { get; set; }
     }
 }

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Linq;
-using System.Reactive.Linq;
 using exmo_trader_bot_console.BusinessProcess;
 using exmo_trader_bot_console.BusinessProcess.Exmo;
 using exmo_trader_bot_console.Services.SettingsService;
