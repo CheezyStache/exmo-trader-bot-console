@@ -9,8 +9,6 @@ namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.DataSto
 {
     interface IDataStorageService
     {
-        Trade[][] TradeCandles { get; }
-        void ConnectToTrades(IObservable<Trade> tradesStream);
         IObservable<Trade[][]> TradeCandlesStream { get; }
     }
 }

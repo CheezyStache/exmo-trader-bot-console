@@ -10,6 +10,6 @@ namespace exmo_trader_bot_console.Services.RESTService
 {
     interface IRestService
     {
-        IObservable<IRestResponse> ResponseStream(IObservable<RestRequest> requestStream);
+        IObservable<IRestResponse> ResponseStream { get; }
     }
 }

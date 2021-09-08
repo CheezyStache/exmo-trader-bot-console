@@ -12,13 +12,16 @@ namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.DataSto
 {
     class DataStorageService: IDataStorageService
     {
+        public Trade[][] TradeCandles { get; private set; }
+        public IObservable<Trade[][]> TradeCandlesStream => _tradeCandlesSubject;
+
         private readonly int _candlesCount;
         private readonly int _candlesMinutes;
 
         private readonly ISubject<Trade[][]> _tradeCandlesSubject;
         private IObservable<IList<Trade>> _bufferStream;
 
-        public DataStorageService(Settings settings)
+        public DataStorageService(Settings settings, IObservable<Trade> tradesStream)
         {
             var candleSystemSettings = settings.CandleSystem;
             _candlesCount = candleSystemSettings.CandleCount;
@@ -29,15 +32,6 @@ namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.DataSto
                 TradeCandles[i] = new Trade[0];
 
             _tradeCandlesSubject = new ReplaySubject<Trade[][]>(_candlesMinutes);
-        }
-
-        public Trade[][] TradeCandles { get; private set; }
-        public IObservable<Trade[][]> TradeCandlesStream => _tradeCandlesSubject;
-
-        public void ConnectToTrades(IObservable<Trade> tradesStream)
-        {
-            if (_bufferStream != null)
-                throw new Exception("Candle signals data storage is already connected to trades stream");
 
             _bufferStream = tradesStream.Buffer(TimeSpan.FromMinutes(_candlesMinutes));
             _bufferStream.Subscribe(OnCandleForm);

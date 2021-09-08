@@ -12,7 +12,8 @@ namespace exmo_trader_bot_console.Services.RESTService
     {
         private Settings _settings;
 
-        public ExmoRestService(Settings settings) : base(settings.Api.OrderCreatePrivate, Method.POST)
+        public ExmoRestService(Settings settings, IObservable<RestRequest> requestStream) : base(
+            settings.Api.OrderCreatePrivate, Method.POST, requestStream)
         {
             _settings = settings;
         }

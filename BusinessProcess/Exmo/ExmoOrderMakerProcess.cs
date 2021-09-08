@@ -41,6 +41,7 @@ namespace exmo_trader_bot_console.BusinessProcess.Exmo
         {
             OrderResult orderResult = decision as OrderResult;
             orderResult.Result = response;
+            orderResult.Date = DateTime.Now;
             return orderResult;
         }
     }

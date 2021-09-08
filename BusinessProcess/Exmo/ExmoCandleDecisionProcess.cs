@@ -17,8 +17,7 @@ namespace exmo_trader_bot_console.BusinessProcess.Exmo
 
         public ExmoCandleDecisionProcess(IObservable<Trade> tradeStream, Settings settings)
         {
-            IDataStorageService dataStorageService = new DataStorageService(settings);
-            dataStorageService.ConnectToTrades(tradeStream);
+            IDataStorageService dataStorageService = new DataStorageService(settings, tradeStream);
             IDecisionService decisionService = new CandleSignalsDecisionService(dataStorageService.TradeCandlesStream);
             DecisionsStream = decisionService.DecisionsStream;
         }
