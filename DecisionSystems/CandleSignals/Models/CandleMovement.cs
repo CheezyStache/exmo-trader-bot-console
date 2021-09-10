@@ -9,6 +9,7 @@ namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Models
     public enum CandleMovement
     {
         Green,
-        Red
+        Red,
+        White
     }
 }

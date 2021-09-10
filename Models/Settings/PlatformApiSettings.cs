@@ -16,6 +16,9 @@ namespace exmo_trader_bot_console.Models.Settings
         public string Key { get; set; }
         public string SecretKey { get; set; }
 
+        public double FeeTaker { get; set; }
+        public double FeeMaker { get; set; }
+
         public string GetSign(long nonce)
         {
             using HMACSHA512 hmac = new HMACSHA512(Encoding.UTF8.GetBytes(SecretKey));

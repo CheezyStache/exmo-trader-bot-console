@@ -8,8 +8,6 @@ namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Models
 {
     public class CandleSignalsSettings
     {
-        public int CandleCount { get; set; }
-        public int CandleMinutes { get; set; }
         public double ErrorPercent { get; set; }
         public int MinTrades { get; set; }
         public CandlePattern[] Patterns { get; set; }

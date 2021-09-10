@@ -1,6 +1,7 @@
 ﻿using System;
 using exmo_trader_bot_console.BusinessProcess;
 using exmo_trader_bot_console.BusinessProcess.Exmo;
+using exmo_trader_bot_console.Models.Settings;
 using exmo_trader_bot_console.Services.SettingsService;
 
 namespace exmo_trader_bot_console
@@ -10,7 +11,7 @@ namespace exmo_trader_bot_console
         static void Main(string[] args)
         {
             Console.WriteLine("Trader Bot is started!");
-            var settingsService = new SettingsService();
+            var settingsService = new SettingsService<Settings>("settings.json");
             var settings = settingsService.GetSettings();
 
             IEventGatherProcess eventGatherProcess = new ExmoEventGatherProcess(settings);

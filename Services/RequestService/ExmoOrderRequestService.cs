@@ -41,10 +41,14 @@ namespace exmo_trader_bot_console.Services.RequestService
                     return "buy";
                 case TradeType.Sell:
                     return "sell";
-                case TradeType.MarketBuy:
+                case TradeType.MarketBuyPrice:
                     return "market_buy";
-                case TradeType.MarketSell:
+                case TradeType.MarketSellPrice:
                     return "market_sell";
+                case TradeType.MarketBuyQuantity:
+                    return "market_buy_total";
+                case TradeType.MarketSellQuantity:
+                    return "market_sell_total";
 
                 default:
                     throw new NotImplementedException();

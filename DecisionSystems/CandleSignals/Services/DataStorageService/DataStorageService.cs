@@ -23,7 +23,7 @@ namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.DataSto
 
         public DataStorageService(Settings settings, IObservable<Trade> tradesStream)
         {
-            var candleSystemSettings = settings.CandleSystem;
+            var candleSystemSettings = settings.Data;
             _candlesCount = candleSystemSettings.CandleCount;
             _candlesMinutes = candleSystemSettings.CandleMinutes;
 

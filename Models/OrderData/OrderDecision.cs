@@ -9,6 +9,7 @@ namespace exmo_trader_bot_console.Models.OrderData
 {
     public class OrderDecision
     {
+        public string Description { get; set; }
         public TradingPair Pair { get; set; }
         public double Quantity { get; set; }
         public double Price { get; set; }

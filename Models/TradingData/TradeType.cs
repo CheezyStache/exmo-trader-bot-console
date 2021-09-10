@@ -10,7 +10,9 @@ namespace exmo_trader_bot_console.Models.TradingData
     {
         Buy,
         Sell,
-        MarketBuy,
-        MarketSell
+        MarketBuyQuantity,
+        MarketSellQuantity,
+        MarketBuyPrice,
+        MarketSellPrice
     }
 }

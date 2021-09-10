@@ -1,0 +1,185 @@
+{
+  "errorPercent": 10,
+  "minTrades": 5,
+  "patterns": [
+    {
+      "name": "Evening Star",
+      "signal": 1,
+      "candles": [
+        {
+          "upperShadowPercent": 0,
+          "lowerShadowPercent": 15,
+          "movement": 0
+        },
+        {
+          "upperShadowPercent": 40,
+          "lowerShadowPercent": 40,
+          "movement": 1
+        },
+        {
+          "upperShadowPercent": 15,
+          "lowerShadowPercent": 0,
+          "movement": 1
+        }
+      ]
+    },
+    {
+      "name": "Three Inside Up",
+      "signal": 0,
+      "candles": [
+        {
+          "upperShadowPercent": 15,
+          "lowerShadowPercent": 0,
+          "movement": 1
+        },
+        {
+          "upperShadowPercent": 20,
+          "lowerShadowPercent": 20,
+          "movement": 0
+        },
+        {
+          "upperShadowPercent": 15,
+          "lowerShadowPercent": 20,
+          "movement": 0
+        }
+      ]
+    },
+    {
+      "name": "Three Outside Down",
+      "signal": 1,
+      "candles": [
+        {
+          "upperShadowPercent": 15,
+          "lowerShadowPercent": 0,
+          "movement": 0
+        },
+        {
+          "upperShadowPercent": 15,
+          "lowerShadowPercent": 20,
+          "movement": 1
+        },
+        {
+          "upperShadowPercent": 15,
+          "lowerShadowPercent": 0,
+          "movement": 1
+        }
+      ]
+    },
+    {
+      "name": "Hammer",
+      "signal": 0,
+      "candles": [
+        {
+          "upperShadowPercent": 0,
+          "lowerShadowPercent": 85,
+          "movement": 0
+        }
+      ]
+    },
+    {
+      "name": "Hanging Man",
+      "signal": 1,
+      "candles": [
+        {
+          "upperShadowPercent": 0,
+          "lowerShadowPercent": 85,
+          "movement": 1
+        }
+      ]
+    },
+    {
+      "name": "Shooting Star",
+      "signal": 1,
+      "candles": [
+        {
+          "upperShadowPercent": 85,
+          "lowerShadowPercent": 0,
+          "movement": 1
+        }
+      ]
+    },
+    {
+      "name": "Morning Star",
+      "signal": 0,
+      "candles": [
+        {
+          "upperShadowPercent": 0,
+          "lowerShadowPercent": 0,
+          "movement": 1
+        },
+        {
+          "upperShadowPercent": 40,
+          "lowerShadowPercent": 40,
+          "movement": 0
+        },
+        {
+          "upperShadowPercent": 0,
+          "lowerShadowPercent": 15,
+          "movement": 0
+        }
+      ]
+    },
+    {
+      "name": "Bearish Breakaway",
+      "signal": 1,
+      "candles": [
+        {
+          "upperShadowPercent": 0,
+          "lowerShadowPercent": 0,
+          "movement": 0
+        },
+        {
+          "upperShadowPercent": 35,
+          "lowerShadowPercent": 35,
+          "movement": 0
+        },
+        {
+          "upperShadowPercent": 35,
+          "lowerShadowPercent": 35,
+          "movement": 0
+        },
+        {
+          "upperShadowPercent": 35,
+          "lowerShadowPercent": 35,
+          "movement": 0
+        },
+        {
+          "upperShadowPercent": 0,
+          "lowerShadowPercent": 0,
+          "movement": 1
+        }
+      ]
+    },
+    {
+      "name": "Bullish Breakaway",
+      "signal": 0,
+      "candles": [
+        {
+          "upperShadowPercent": 0,
+          "lowerShadowPercent": 0,
+          "movement": 1
+        },
+        {
+          "upperShadowPercent": 35,
+          "lowerShadowPercent": 35,
+          "movement": 1
+        },
+        {
+          "upperShadowPercent": 35,
+          "lowerShadowPercent": 35,
+          "movement": 1
+        },
+        {
+          "upperShadowPercent": 35,
+          "lowerShadowPercent": 35,
+          "movement": 1
+        },
+        {
+          "upperShadowPercent": 0,
+          "lowerShadowPercent": 0,
+          "movement": 0
+        }
+      ]
+    }
+  ]
+} 
