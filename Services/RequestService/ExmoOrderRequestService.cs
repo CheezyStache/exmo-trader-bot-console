@@ -12,14 +12,14 @@ using RestSharp;
 
 namespace exmo_trader_bot_console.Services.RequestService
 {
-    class ExmoOrderRequestService: IOrderRequestService
+    class ExmoOrderRequestService: BaseOutputStreamService<IRestRequest>, IOrderRequestService
     {
-        public IObservable<RestRequest> RequestStream(IObservable<OrderDecision> requestStream)
+        public void Subscribe(IObservable<OrderDecision> inputStream)
         {
-            return requestStream.Select(SerializeRequest);
+            OutputStream = inputStream.Select(SerializeRequest);
         }
 
-        private RestRequest SerializeRequest(OrderDecision orderDecision)
+        private IRestRequest SerializeRequest(OrderDecision orderDecision)
         {
             var type = SerializeTradeType(orderDecision.Type);
             var pair = SerializePair(orderDecision.Pair);

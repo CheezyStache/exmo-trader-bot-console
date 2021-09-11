@@ -10,11 +10,11 @@ using exmo_trader_bot_console.Models.Internal;
 
 namespace exmo_trader_bot_console.Services.ParserService.Exmo
 {
-    public class ExmoEventsParserService: IEventParserService
+    public class ExmoEventsParserService: BaseOutputStreamService<ResponseWithEvent>, IEventParserService
     {
-        public IObservable<ResponseWithEvent> ParserStream(IObservable<string> responseStream)
+        public void Subscribe(IObservable<string> inputStream)
         {
-            return responseStream.Select(ParseResponseWithEvent);
+            OutputStream = inputStream.Select(ParseResponseWithEvent);
         }
 
         private ResponseWithEvent ParseResponseWithEvent(string response)

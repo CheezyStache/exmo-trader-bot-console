@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace exmo_trader_bot_console.Services.SettingsService
 {
-    public interface ISettingsService<T> where T: class
+    public interface ISettingsService<out T> where T: class
     {
         T GetSettings();
     }

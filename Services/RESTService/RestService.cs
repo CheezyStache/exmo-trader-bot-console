@@ -8,23 +8,24 @@ using RestSharp;
 
 namespace exmo_trader_bot_console.Services.RESTService
 {
-    class RestService: IRestService
+    class RestService: BaseOutputStreamService<IRestResponse>, IRestService
     {
-        public IObservable<IRestResponse> ResponseStream { get; }
-
         protected readonly RestClient _client;
         private readonly Method _method;
         
-        public RestService(string url, Method method, IObservable<RestRequest> requestStream)
+        public RestService(string url, Method method)
         {
             _method = method;
             _client = new RestClient(url);
             _client.Timeout = -1;
-
-            ResponseStream = requestStream.Select(ExecuteRequest);
         }
 
-        protected virtual IRestResponse ExecuteRequest(RestRequest restRequest)
+        public void Subscribe(IObservable<IRestRequest> inputStream)
+        {
+            OutputStream = inputStream.Select(ExecuteRequest);
+        }
+
+        protected virtual IRestResponse ExecuteRequest(IRestRequest restRequest)
         {
             return _client.Execute(restRequest, _method);
         }

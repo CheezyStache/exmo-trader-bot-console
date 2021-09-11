@@ -8,12 +8,13 @@ using exmo_trader_bot_console.DecisionSystems.CandleSignals.Models;
 using exmo_trader_bot_console.Models.OrderData;
 using exmo_trader_bot_console.Models.Settings;
 using exmo_trader_bot_console.Models.TradingData;
+using exmo_trader_bot_console.Services.DecisionService;
 
 namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.DecisionService
 {
     class CandleSignalsDecisionService: IDecisionService
     {
-        public IObservable<OrderDecision> DecisionsStream => _decisionsSubject;
+        public IObservable<OrderDecision> OutputStream => _decisionsSubject;
 
         private readonly ISubject<OrderDecision> _decisionsSubject;
         private readonly CandleSignalsSettings _settings;
@@ -30,6 +31,11 @@ namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.Decisio
 
             _decisionsSubject = new Subject<OrderDecision>();
             candles.Subscribe(MakeDecision);
+        }
+
+        public void Subscribe(IObservable<Trade> inputStream)
+        {
+            throw new NotImplementedException();
         }
 
         private void MakeDecision(Trade[][] candles)

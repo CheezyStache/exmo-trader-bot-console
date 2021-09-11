@@ -1,37 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
-using exmo_trader_bot_console.Models.OrderData;
-using exmo_trader_bot_console.Models.TradingData;
 
 namespace exmo_trader_bot_console.Services.DataStorageService
 {
-    public class DataStorageService: IDataStorageService
+    public abstract class DataStorageService<T>: IDataStorageService<T> where T : class
     {
-        public IObservable<Trade> TradesStream => _tradesSubject;
-        public IObservable<OrderDecision> OrdersStream => _ordersSubject;
+        private readonly ISubject<T> _dataSubject;
 
-        private readonly ISubject<Trade> _tradesSubject;
-        private readonly ISubject<OrderDecision> _ordersSubject;
-
-        public DataStorageService()
+        protected DataStorageService()
         {
-            _tradesSubject = new Subject<Trade>();
-            _ordersSubject = new Subject<OrderDecision>();
+            _dataSubject = new Subject<T>();
         }
 
-        public void AddTrade(Trade trade)
+        public IObservable<T> OutputStream => _dataSubject;
+
+        public virtual void Subscribe(IObservable<T> inputStream)
         {
-            _tradesSubject.OnNext(trade);
+            inputStream.Subscribe(AddData);
         }
 
-        public void AddOrder(OrderDecision order)
+        private void AddData(T data)
         {
-            _ordersSubject.OnNext(order);
+            _dataSubject.OnNext(data);
         }
     }
 }

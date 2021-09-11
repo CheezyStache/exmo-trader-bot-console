@@ -8,13 +8,11 @@ using exmo_trader_bot_console.Models.Internal;
 
 namespace exmo_trader_bot_console.Services.EventRouterService
 {
-    class TradesEventRouterService: IEventRouterService
+    class TradesEventRouterService: BaseOutputStreamService<ResponseWithEvent>, IEventRouterService
     {
-        public IObservable<ResponseWithEvent> EventStream { get; }
-
-        public TradesEventRouterService(IObservable<ResponseWithEvent> eventStream)
+        public void Subscribe(IObservable<ResponseWithEvent> inputStream)
         {
-            EventStream = eventStream.Where(e => e.Event == ResponseEvent.Update);
+            OutputStream = inputStream.Where(e => e.Event == ResponseEvent.Update);
         }
     }
 }

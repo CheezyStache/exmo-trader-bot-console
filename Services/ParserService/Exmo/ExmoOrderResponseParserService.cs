@@ -9,17 +9,18 @@ using exmo_trader_bot_console.Models.Exmo;
 
 namespace exmo_trader_bot_console.Services.ParserService.Exmo
 {
-    class ExmoOrderResponseParserService: IOrderResponseParserService
+    class ExmoOrderResponseParserService: BaseOutputStreamService<bool>, IOrderResponseParserService
     {
-        public IObservable<bool> ParserStream(IObservable<string> responseStream)
+        public void Subscribe(IObservable<string> inputStream)
         {
-            return responseStream.Select(ParseResponse);
+            OutputStream = inputStream.Select(ParseResponse);
         }
 
-        public bool ParseResponse(string response)
+        private bool ParseResponse(string response)
         {
-            return JsonSerializer.Deserialize<ExmoOrderCreateResponse>(response)
-                .Result;
+            var createResponse = JsonSerializer.Deserialize<ExmoOrderCreateResponse>(response);
+
+            return createResponse?.Result ?? false;
         }
     }
 }

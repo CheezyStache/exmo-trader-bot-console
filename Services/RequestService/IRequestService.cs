@@ -7,8 +7,7 @@ using RestSharp;
 
 namespace exmo_trader_bot_console.Services.RequestService
 {
-    interface IRequestService<in T> where T : class
+    interface IRequestService<in T>: IStreamService<T, IRestRequest> where T : class
     {
-        IObservable<RestRequest> RequestStream(IObservable<T> requestStream);
     }
 }

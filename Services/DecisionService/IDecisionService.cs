@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using exmo_trader_bot_console.Models.OrderData;
+using exmo_trader_bot_console.Models.TradingData;
 
-namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.DecisionService
+namespace exmo_trader_bot_console.Services.DecisionService
 {
-    interface IDecisionService
+    interface IDecisionService: IStreamService<Trade, OrderDecision>
     {
-        IObservable<OrderDecision> DecisionsStream { get; }
+
     }
 }

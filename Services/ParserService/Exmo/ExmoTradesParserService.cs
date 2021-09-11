@@ -12,11 +12,11 @@ using TraderBot.Models.Exmo;
 
 namespace exmo_trader_bot_console.Services.ParserService.Exmo
 {
-    public class ExmoTradesParserService: ITradesParserService
+    public class ExmoTradesParserService: BaseOutputStreamService<Trade>, ITradesParserService
     {
-        public IObservable<Trade> ParserStream(IObservable<string> responseStream)
+        public void Subscribe(IObservable<string> inputStream)
         {
-            return responseStream.SelectMany(ParseResponse);
+            OutputStream = inputStream.SelectMany(ParseResponse);
         }
 
         private IEnumerable<Trade> ParseResponse(string response)

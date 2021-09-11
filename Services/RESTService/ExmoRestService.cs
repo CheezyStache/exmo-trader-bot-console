@@ -12,13 +12,13 @@ namespace exmo_trader_bot_console.Services.RESTService
     {
         private Settings _settings;
 
-        public ExmoRestService(Settings settings, IObservable<RestRequest> requestStream) : base(
-            settings.Api.OrderCreatePrivate, Method.POST, requestStream)
+        public ExmoRestService(Settings settings) : base(
+            settings.Api.OrderCreatePrivate, Method.POST)
         {
             _settings = settings;
         }
 
-        protected override IRestResponse ExecuteRequest(RestRequest restRequest)
+        protected override IRestResponse ExecuteRequest(IRestRequest restRequest)
         {
             var nonce = DateTime.Now.Ticks;
 

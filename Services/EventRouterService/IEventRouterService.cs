@@ -7,8 +7,7 @@ using exmo_trader_bot_console.Models.Internal;
 
 namespace exmo_trader_bot_console.Services.EventRouterService
 {
-    interface IEventRouterService
+    interface IEventRouterService: IStreamService<ResponseWithEvent, ResponseWithEvent>
     {
-        IObservable<ResponseWithEvent> EventStream { get; }
     }
 }
