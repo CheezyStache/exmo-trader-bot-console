@@ -21,7 +21,7 @@ namespace exmo_trader_bot_console.BusinessProcess.Exmo
         {
             var candleSettings = new SettingsService<CandleSignalsSettings>("candlesSettings.json");
 
-            IDataStorageService dataStorageService = new DataStorageService(settings, tradeStream);
+            IDataStorageService dataStorageService = new CandleStorageService(settings, tradeStream);
             IDecisionService decisionService = new CandleSignalsDecisionService(dataStorageService.TradeCandlesStream,
                 candleSettings.GetSettings(), settings.Pairs[0]);
             DecisionsStream = decisionService.DecisionsStream;

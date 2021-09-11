@@ -12,7 +12,8 @@ namespace exmo_trader_bot_console.Services.WebSocketService
 {
     public class WebSocketService : IWebSocketService, IDisposable
     {
-        public IObservable<string> ReceiveStream => _receiveSubject;
+        public IObservable<string> OutputStream => _receiveSubject;
+        public void Subscribe(IObservable<object> inputStream) { }
 
         private readonly Subject<string> _receiveSubject;
         private ClientWebSocket _socket;
@@ -44,12 +45,6 @@ namespace exmo_trader_bot_console.Services.WebSocketService
         {
             _isReceiving = true;
             _receiveTask = Task.Run(StartReceiveProcess);
-        }
-
-        public void StopReceiveStream()
-        {
-            Dispose();
-            _receiveSubject.OnCompleted();
         }
 
         private async Task StartReceiveProcess()

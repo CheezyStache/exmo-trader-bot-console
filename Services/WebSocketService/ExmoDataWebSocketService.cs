@@ -8,7 +8,7 @@ using exmo_trader_bot_console.Models.Settings;
 
 namespace exmo_trader_bot_console.Services.WebSocketService
 {
-    public class ExmoDataWebSocketService: IDataWebSocketService
+    public class ExmoDataWebSocketService: BaseOutputStreamService<string>, IDataWebSocketService
     {
         private Settings _settings;
         private IWebSocketService _privateWebSocketService;
@@ -19,31 +19,14 @@ namespace exmo_trader_bot_console.Services.WebSocketService
             _settings = settings;
         }
 
-        public IObservable<string> ConnectToApi(APIType type)
+        public void Subscribe(IObservable<object> inputStream) { }
+
+        public void ConnectToApi(APIType type)
         {
             IWebSocketService service = new WebSocketService();
+            OutputStream = service.OutputStream;
 
             Task.Run(() => StartConnection(type, service));
-
-            return service.ReceiveStream;
-        }
-
-        public void DisconnectFromApi(APIType type)
-        {
-            switch (type)
-            {
-                case APIType.Private:
-                    _privateWebSocketService.StopReceiveStream();
-                    _privateWebSocketService = null;
-                    break;
-                case APIType.Public:
-                    _publicWebSocketService.StopReceiveStream();
-                    _publicWebSocketService = null;
-                    break;
-
-                default:
-                    throw new NotImplementedException();
-            }
         }
 
         private async Task StartConnection(APIType type, IWebSocketService service)

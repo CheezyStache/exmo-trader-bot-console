@@ -7,13 +7,15 @@ using System.Text;
 using System.Threading.Tasks;
 using exmo_trader_bot_console.Models.Settings;
 using exmo_trader_bot_console.Models.TradingData;
+using exmo_trader_bot_console.Services;
 
-namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.DataStorageService
+namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.CandleStorageService
 {
-    class DataStorageService: IDataStorageService
+    class CandleStorageService: ICandleStorageService
     {
+        public IObservable<Trade[][]> OutputStream => _tradeCandlesSubject;
+
         public Trade[][] TradeCandles { get; private set; }
-        public IObservable<Trade[][]> TradeCandlesStream => _tradeCandlesSubject;
 
         private readonly int _candlesCount;
         private readonly int _candlesMinutes;
@@ -21,7 +23,7 @@ namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.DataSto
         private readonly ISubject<Trade[][]> _tradeCandlesSubject;
         private IObservable<IList<Trade>> _bufferStream;
 
-        public DataStorageService(Settings settings, IObservable<Trade> tradesStream)
+        public CandleStorageService(Settings settings)
         {
             var candleSystemSettings = settings.Data;
             _candlesCount = candleSystemSettings.CandleCount;
@@ -32,8 +34,11 @@ namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.DataSto
                 TradeCandles[i] = new Trade[0];
 
             _tradeCandlesSubject = new ReplaySubject<Trade[][]>(_candlesMinutes);
+        }
 
-            _bufferStream = tradesStream.Buffer(TimeSpan.FromMinutes(_candlesMinutes));
+        public void Subscribe(IObservable<Trade> inputStream)
+        {
+            _bufferStream = inputStream.Buffer(TimeSpan.FromMinutes(_candlesMinutes));
             _bufferStream.Subscribe(OnCandleForm);
         }
 

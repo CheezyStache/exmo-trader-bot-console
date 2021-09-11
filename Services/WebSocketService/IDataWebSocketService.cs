@@ -7,9 +7,8 @@ using exmo_trader_bot_console.Models.PlatformAPI;
 
 namespace exmo_trader_bot_console.Services.WebSocketService
 {
-    public interface IDataWebSocketService
+    public interface IDataWebSocketService: IStreamService<object, string>
     {
-        IObservable<string> ConnectToApi(APIType type);
-        void DisconnectFromApi(APIType type);
+        void ConnectToApi(APIType type);
     }
 }

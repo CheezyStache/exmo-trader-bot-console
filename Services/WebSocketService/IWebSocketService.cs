@@ -6,12 +6,10 @@ using System.Threading.Tasks;
 
 namespace exmo_trader_bot_console.Services.WebSocketService
 {
-    public interface IWebSocketService
+    public interface IWebSocketService: IStreamService<object, string>
     {
-        IObservable<string> ReceiveStream { get; }
         Task Send(string data);
         Task Connect(string url);
         void StartReceiveStream();
-        void StopReceiveStream();
     }
 }

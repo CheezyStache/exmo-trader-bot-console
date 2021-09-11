@@ -5,6 +5,7 @@ using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
 using exmo_trader_bot_console.DecisionSystems.CandleSignals.Models;
+using exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.CandleStorageService;
 using exmo_trader_bot_console.Models.OrderData;
 using exmo_trader_bot_console.Models.Settings;
 using exmo_trader_bot_console.Models.TradingData;
@@ -22,7 +23,7 @@ namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.Decisio
         private double _walletBalanceCurrency;
         private double _walletBalanceCrypto;
 
-        public CandleSignalsDecisionService(IObservable<Trade[][]> candles, CandleSignalsSettings settings, TradingPairSettings pairSettings)
+        public CandleSignalsDecisionService(CandleSignalsSettings settings, TradingPairSettings pairSettings)
         {
             _settings = settings;
             _pairSettings = pairSettings;
@@ -30,12 +31,13 @@ namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.Decisio
             _walletBalanceCrypto = 0;
 
             _decisionsSubject = new Subject<OrderDecision>();
-            candles.Subscribe(MakeDecision);
         }
 
         public void Subscribe(IObservable<Trade> inputStream)
         {
-            throw new NotImplementedException();
+            ICandleStorageService candleDataService = new CandleStorageService.CandleStorageService(new Settings());
+            candleDataService.Subscribe(inputStream);
+            candleDataService.OutputStream.Subscribe(MakeDecision);
         }
 
         private void MakeDecision(Trade[][] candles)
