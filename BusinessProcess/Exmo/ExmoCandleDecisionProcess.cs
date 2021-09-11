@@ -19,12 +19,12 @@ namespace exmo_trader_bot_console.BusinessProcess.Exmo
 
         public ExmoCandleDecisionProcess(IObservable<Trade> tradeStream, Settings settings)
         {
-            //var candleSettings = new SettingsService<CandleSignalsSettings>("candlesSettings.json");
+            var candleSettings = new SettingsService<CandleSignalsSettings>("candlesSettings.json");
 
-            //IDataStorageService dataStorageService = new CandleStorageService(settings, tradeStream);
-            //IDecisionService decisionService = new CandleSignalsDecisionService(dataStorageService.TradeCandlesStream,
-            //    candleSettings.GetSettings(), settings.Pairs[0]);
-            //DecisionsStream = decisionService.DecisionsStream;
+            IDataStorageService dataStorageService = new CandleStorageService(settings, tradeStream);
+            IDecisionService decisionService = new CandleSignalsDecisionService(dataStorageService.TradeCandlesStream,
+                candleSettings.GetSettings(), settings.Pairs[0]);
+            DecisionsStream = decisionService.DecisionsStream;
         }
     }
 }

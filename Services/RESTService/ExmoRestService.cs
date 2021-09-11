@@ -18,7 +18,7 @@ namespace exmo_trader_bot_console.Services.RESTService
             _settings = settings;
         }
 
-        protected override IRestResponse ExecuteRequest(IRestRequest restRequest)
+        protected override string ExecuteRequest(IRestRequest restRequest)
         {
             var nonce = DateTime.Now.Ticks;
 

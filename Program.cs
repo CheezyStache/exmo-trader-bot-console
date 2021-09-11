@@ -8,6 +8,8 @@ using exmo_trader_bot_console.Services.DataStorageService;
 using exmo_trader_bot_console.Services.EventRouterService;
 using exmo_trader_bot_console.Services.ParserService;
 using exmo_trader_bot_console.Services.ParserService.Exmo;
+using exmo_trader_bot_console.Services.RequestService;
+using exmo_trader_bot_console.Services.RESTService;
 using exmo_trader_bot_console.Services.SettingsService;
 using exmo_trader_bot_console.Services.WebSocketService;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,7 +43,11 @@ namespace exmo_trader_bot_console
                 .AddSingleton<IEventParserService, ExmoEventsParserService>()
                 .AddSingleton<ITradesEventRouterService, TradesEventRouterService>()
                 .AddSingleton<ITradesParserService, ExmoTradesParserService>()
-                .AddSingleton<IDataStorageService<Trade>, TradesDataStorageService>();
+                .AddSingleton<IDataStorageService<Trade>, TradesDataStorageService>()
+                
+                .AddSingleton<IOrderRequestService, ExmoOrderRequestService>()
+                .AddSingleton<IRestService, ExmoRestService>()
+                .AddSingleton<IOrderResponseParserService, ExmoOrderResponseParserService>();
         }
     }
 }

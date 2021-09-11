@@ -8,7 +8,7 @@ using RestSharp;
 
 namespace exmo_trader_bot_console.Services.RESTService
 {
-    interface IRestService: IStreamService<IRestRequest, IRestResponse>
+    interface IRestService: IStreamService<IRestRequest, string>
     {
     }
 }
