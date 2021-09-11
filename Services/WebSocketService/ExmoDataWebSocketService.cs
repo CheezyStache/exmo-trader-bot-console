@@ -5,28 +5,30 @@ using System.Text;
 using System.Threading.Tasks;
 using exmo_trader_bot_console.Models.PlatformAPI;
 using exmo_trader_bot_console.Models.Settings;
+using exmo_trader_bot_console.Services.SettingsService;
 
 namespace exmo_trader_bot_console.Services.WebSocketService
 {
     public class ExmoDataWebSocketService: BaseOutputStreamService<string>, IDataWebSocketService
     {
-        private Settings _settings;
+        private readonly Settings _settings;
+        private readonly IWebSocketService _webSocketService;
         private IWebSocketService _privateWebSocketService;
         private IWebSocketService _publicWebSocketService;
 
-        public ExmoDataWebSocketService(Settings settings)
+        public ExmoDataWebSocketService(ISettingsService<Settings> settings, IWebSocketService webSocketService)
         {
-            _settings = settings;
+            _settings = settings.GetSettings();
+            _webSocketService = webSocketService;
         }
 
         public void Subscribe(IObservable<object> inputStream) { }
 
         public void ConnectToApi(APIType type)
         {
-            IWebSocketService service = new WebSocketService();
-            OutputStream = service.OutputStream;
+            OutputStream = _webSocketService.OutputStream;
 
-            Task.Run(() => StartConnection(type, service));
+            Task.Run(() => StartConnection(type, _webSocketService));
         }
 
         private async Task StartConnection(APIType type, IWebSocketService service)

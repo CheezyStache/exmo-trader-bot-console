@@ -19,22 +19,22 @@ namespace exmo_trader_bot_console.BusinessProcess.Exmo
 
         public ExmoOrderMakerProcess(IObservable<OrderDecision> decisionsStream, Settings settings)
         {
-            IOrderRequestService orderRequestService = new ExmoOrderRequestService();
-            var requests = orderRequestService.RequestStream(decisionsStream);
+            //IOrderRequestService orderRequestService = new ExmoOrderRequestService();
+            //var requests = orderRequestService.RequestStream(decisionsStream);
 
-            //IRestService restService = new ExmoRestService(settings);
-            //var responses = restService.ResponseStream(requests);
+            ////IRestService restService = new ExmoRestService(settings);
+            ////var responses = restService.ResponseStream(requests);
 
-            var responses = requests.Select(r => new RestResponse
-            {
-                Content = JsonSerializer.Serialize(new ExmoOrderCreateResponse {Result = true},
-                    new JsonSerializerOptions {PropertyNamingPolicy = JsonNamingPolicy.CamelCase})
-            }); // for testing
+            //var responses = requests.Select(r => new RestResponse
+            //{
+            //    Content = JsonSerializer.Serialize(new ExmoOrderCreateResponse {Result = true},
+            //        new JsonSerializerOptions {PropertyNamingPolicy = JsonNamingPolicy.CamelCase})
+            //}); // for testing
 
-            var orderResponseParser = new ExmoOrderResponseParserService();
-            var orderResponses = orderResponseParser.ParserStream(responses.Select(r => r.Content));
+            //var orderResponseParser = new ExmoOrderResponseParserService();
+            //var orderResponses = orderResponseParser.ParserStream(responses.Select(r => r.Content));
 
-            OrderResultStream = decisionsStream.Zip(orderResponses, ConstructOrderResult);
+            //OrderResultStream = decisionsStream.Zip(orderResponses, ConstructOrderResult);
         }
 
         private OrderResult ConstructOrderResult(OrderDecision decision, bool response)

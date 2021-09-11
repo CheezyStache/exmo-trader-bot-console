@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace exmo_trader_bot_console.Services.WebSocketService
 {
-    public class WebSocketService : IWebSocketService, IDisposable
+    public class WebSocketService : IWebSocketService
     {
         public IObservable<string> OutputStream => _receiveSubject;
         public void Subscribe(IObservable<object> inputStream) { }
@@ -78,13 +78,13 @@ namespace exmo_trader_bot_console.Services.WebSocketService
             }
             catch (Exception e)
             {
-                Dispose();
+                StopSocket();
                 _receiveSubject.OnError(e);
                 throw;
             }
         }
 
-        public void Dispose()
+        private void StopSocket()
         {
             _isReceiving = false;
             _receiveTask.Dispose();

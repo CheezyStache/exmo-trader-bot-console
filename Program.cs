@@ -1,30 +1,47 @@
 ﻿using System;
-using exmo_trader_bot_console.BusinessProcess;
-using exmo_trader_bot_console.BusinessProcess.Exmo;
+using System.Threading.Tasks;
+using exmo_trader_bot_console.DecisionSystems.CandleSignals.Models;
+using exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.SettingsService;
 using exmo_trader_bot_console.Models.Settings;
+using exmo_trader_bot_console.Models.TradingData;
+using exmo_trader_bot_console.Services.DataStorageService;
+using exmo_trader_bot_console.Services.EventRouterService;
+using exmo_trader_bot_console.Services.ParserService;
+using exmo_trader_bot_console.Services.ParserService.Exmo;
 using exmo_trader_bot_console.Services.SettingsService;
+using exmo_trader_bot_console.Services.WebSocketService;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace exmo_trader_bot_console
 {
     class Program
     {
-        static void Main(string[] args)
+        static Task Main(string[] args)
         {
             Console.WriteLine("Trader Bot is started!");
-            var settingsService = new SettingsService<Settings>("settings.json");
-            var settings = settingsService.GetSettings();
 
-            IEventGatherProcess eventGatherProcess = new ExmoEventGatherProcess(settings);
-            IDataStorageFillerProcess dataStorageFillerProcess =
-                new ExmoDataStorageFillerProcess(eventGatherProcess.EventsStream);
+            using IHost host = CreateHostBuilder(args).Build();
 
-            IDecisionProcess decisionProcess =
-                new ExmoCandleDecisionProcess(dataStorageFillerProcess.TradesStream, settings);
+            Process.StartProcess(host.Services);
 
-            IOrderMakerProcess orderMakerProcess = new ExmoOrderMakerProcess(decisionProcess.DecisionsStream, settings);
-            orderMakerProcess.OrderResultStream.Subscribe(Console.WriteLine);
+            return host.RunAsync();
+        }
 
-            Console.ReadKey();
+        static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureServices(ConfigureAppServices);
+
+        static void ConfigureAppServices(HostBuilderContext _, IServiceCollection services)
+        {
+            services.AddSingleton<ISettingsService<Settings>, MainSettingsService>()
+                .AddSingleton<ISettingsService<CandleSignalsSettings>, CandleSettingsService>()
+                .AddSingleton<IWebSocketService, WebSocketService>()
+                .AddSingleton<IDataWebSocketService, ExmoDataWebSocketService>()
+                .AddSingleton<IEventParserService, ExmoEventsParserService>()
+                .AddSingleton<ITradesEventRouterService, TradesEventRouterService>()
+                .AddSingleton<ITradesParserService, ExmoTradesParserService>()
+                .AddSingleton<IDataStorageService<Trade>, TradesDataStorageService>();
         }
     }
 }
