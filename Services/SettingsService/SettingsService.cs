@@ -11,6 +11,7 @@ namespace exmo_trader_bot_console.Services.SettingsService
     public class SettingsService<T>: ISettingsService<T> where T: class
     {
         private readonly string _path;
+        private T _settings;
 
         public SettingsService(string path)
         {
@@ -19,9 +20,14 @@ namespace exmo_trader_bot_console.Services.SettingsService
 
         public T GetSettings()
         {
+            if (_settings != null)
+                return _settings;
+
             var settingsJson = ReadSettingsJson();
-            return JsonSerializer.Deserialize<T>(settingsJson,
+            _settings = JsonSerializer.Deserialize<T>(settingsJson,
                 new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+
+            return _settings;
         }
 
         private string ReadSettingsJson()
