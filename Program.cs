@@ -8,6 +8,7 @@ using exmo_trader_bot_console.Models.TradingData;
 using exmo_trader_bot_console.Services.DataStorageService;
 using exmo_trader_bot_console.Services.DecisionService;
 using exmo_trader_bot_console.Services.EventRouterService;
+using exmo_trader_bot_console.Services.LoggerService;
 using exmo_trader_bot_console.Services.ParserService;
 using exmo_trader_bot_console.Services.ParserService.Exmo;
 using exmo_trader_bot_console.Services.RequestService;
@@ -50,6 +51,7 @@ namespace exmo_trader_bot_console
                 .AddSingleton<IOrderResponseParserService, ExmoOrderResponseParserService>()
                 .AddSingleton<IOrderResultParserService, ExmoOrderResultParserService>()
                 .AddSingleton<IWalletService, WalletService>()
+                .AddSingleton<ILoggerService, LoggerService>()
                 .AddScoped<IWebSocketService, WebSocketService>()
                 .AddScoped<IDataWebSocketService, ExmoDataWebSocketService>()
                 .AddScoped<IEventParserService, ExmoEventsParserService>()

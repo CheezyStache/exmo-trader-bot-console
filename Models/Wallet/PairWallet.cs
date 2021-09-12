@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace exmo_trader_bot_console.Models.Wallet
 {
-    class PairWallet
+    public class PairWallet
     {
         public PairWallet(double crypto, double currency)
         {

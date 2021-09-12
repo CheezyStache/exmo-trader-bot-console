@@ -7,6 +7,8 @@ using System.Reactive.Subjects;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using exmo_trader_bot_console.Models.Internal;
+using exmo_trader_bot_console.Services.LoggerService;
 
 namespace exmo_trader_bot_console.Services.WebSocketService
 {
@@ -15,14 +17,16 @@ namespace exmo_trader_bot_console.Services.WebSocketService
         public IObservable<string> OutputStream => _receiveSubject;
         public void Subscribe(IObservable<object> inputStream) { }
 
+        private readonly ILoggerService _loggerService;
         private readonly Subject<string> _receiveSubject;
         private ClientWebSocket _socket;
         private bool _isReceiving;
         private Task _receiveTask;
 
-        public WebSocketService()
+        public WebSocketService(ILoggerService loggerService)
         {
             _receiveSubject = new Subject<string>();
+            _loggerService = loggerService;
         }
 
         public Task Connect(string url)
@@ -78,6 +82,8 @@ namespace exmo_trader_bot_console.Services.WebSocketService
             }
             catch (Exception e)
             {
+                _loggerService.OnInfo("Web socket caught an exception and stopped:", LoggerEvent.Error);
+                _loggerService.OnInfo(e.Message, LoggerEvent.Error);
                 StopSocket();
                 _receiveSubject.OnError(e);
                 throw;

@@ -9,9 +9,8 @@ using exmo_trader_bot_console.Models.Wallet;
 
 namespace exmo_trader_bot_console.Services.WalletService
 {
-    interface IWalletService
+    interface IWalletService: IStreamService<OrderResult, WalletChange>
     {
         IDictionary<TradingPair, PairWallet> Wallet { get; }
-        void Subscribe(IObservable<OrderResult> orders);
     }
 }
