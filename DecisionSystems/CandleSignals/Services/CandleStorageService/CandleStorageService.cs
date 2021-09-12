@@ -7,50 +7,52 @@ using System.Text;
 using System.Threading.Tasks;
 using exmo_trader_bot_console.Models.Settings;
 using exmo_trader_bot_console.Models.TradingData;
-using exmo_trader_bot_console.Services;
 
 namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.CandleStorageService
 {
-    class CandleStorageService: ICandleStorageService
+    class CandleStorageService
     {
         public IObservable<Trade[][]> OutputStream => _tradeCandlesSubject;
 
-        public Trade[][] TradeCandles { get; private set; }
+        private Trade[][] _tradeCandles;
 
         private readonly int _candlesCount;
-        private readonly int _candlesMinutes;
 
         private readonly ISubject<Trade[][]> _tradeCandlesSubject;
+        private readonly ISubject<Trade> _inputStream;
         private IObservable<IList<Trade>> _bufferStream;
 
-        public CandleStorageService(Settings settings)
+        public CandleStorageService(DataSettings settings)
         {
-            var candleSystemSettings = settings.Data;
+            var candleSystemSettings = settings;
             _candlesCount = candleSystemSettings.CandleCount;
-            _candlesMinutes = candleSystemSettings.CandleMinutes;
+            var candlesMinutes = candleSystemSettings.CandleMinutes;
 
-            TradeCandles = new Trade[_candlesCount][];
+            _tradeCandles = new Trade[_candlesCount][];
             for (int i = 0; i < _candlesCount; i++)
-                TradeCandles[i] = new Trade[0];
+                _tradeCandles[i] = new Trade[0];
 
-            _tradeCandlesSubject = new ReplaySubject<Trade[][]>(_candlesMinutes);
+            _tradeCandlesSubject = new ReplaySubject<Trade[][]>(candlesMinutes);
+            _inputStream = new Subject<Trade>();
+
+            _bufferStream = _inputStream.Buffer(TimeSpan.FromMinutes(candlesMinutes));
+            _bufferStream.Subscribe(OnCandleForm);
         }
 
-        public void Subscribe(IObservable<Trade> inputStream)
+        public void AddTrade(Trade trade)
         {
-            _bufferStream = inputStream.Buffer(TimeSpan.FromMinutes(_candlesMinutes));
-            _bufferStream.Subscribe(OnCandleForm);
+            _inputStream.OnNext(trade);
         }
 
         private void OnCandleForm(IList<Trade> trades)
         {
             var tradesArray = trades.ToArray();
 
-            TradeCandles = TradeCandles.TakeLast(_candlesCount - 1)
+            _tradeCandles = _tradeCandles.TakeLast(_candlesCount - 1)
                 .Append(tradesArray)
                 .ToArray();
 
-            _tradeCandlesSubject.OnNext(TradeCandles);
+            _tradeCandlesSubject.OnNext(_tradeCandles);
         }
     }
 }

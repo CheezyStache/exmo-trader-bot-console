@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
 using exmo_trader_bot_console.DecisionSystems.CandleSignals.Models;
+using exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.DecisionService;
 using exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.SettingsService;
 using exmo_trader_bot_console.Models.Settings;
 using exmo_trader_bot_console.Models.TradingData;
 using exmo_trader_bot_console.Services.DataStorageService;
+using exmo_trader_bot_console.Services.DecisionService;
 using exmo_trader_bot_console.Services.EventRouterService;
 using exmo_trader_bot_console.Services.ParserService;
 using exmo_trader_bot_console.Services.ParserService.Exmo;
@@ -44,7 +46,7 @@ namespace exmo_trader_bot_console
                 .AddSingleton<ITradesEventRouterService, TradesEventRouterService>()
                 .AddSingleton<ITradesParserService, ExmoTradesParserService>()
                 .AddSingleton<IDataStorageService<Trade>, TradesDataStorageService>()
-                
+                .AddSingleton<IDecisionService, CandleSignalsDecisionService>()
                 .AddSingleton<IOrderRequestService, ExmoOrderRequestService>()
                 .AddSingleton<IRestService, ExmoRestService>()
                 .AddSingleton<IOrderResponseParserService, ExmoOrderResponseParserService>();

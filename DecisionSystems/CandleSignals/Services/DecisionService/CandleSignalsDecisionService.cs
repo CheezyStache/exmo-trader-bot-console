@@ -10,6 +10,7 @@ using exmo_trader_bot_console.Models.OrderData;
 using exmo_trader_bot_console.Models.Settings;
 using exmo_trader_bot_console.Models.TradingData;
 using exmo_trader_bot_console.Services.DecisionService;
+using exmo_trader_bot_console.Services.SettingsService;
 
 namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.DecisionService
 {
@@ -17,133 +18,38 @@ namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.Decisio
     {
         public IObservable<OrderDecision> OutputStream => _decisionsSubject;
 
+        private readonly IDictionary<TradingPair, PairDecisionService> _pairServices;
         private readonly ISubject<OrderDecision> _decisionsSubject;
-        private readonly CandleSignalsSettings _settings;
-        private readonly TradingPairSettings _pairSettings;
-        private double _walletBalanceCurrency;
-        private double _walletBalanceCrypto;
+        private readonly CandleSignalsSettings _candleSettings;
+        private readonly Settings _settings;
 
-        public CandleSignalsDecisionService(CandleSignalsSettings settings, TradingPairSettings pairSettings)
+        public CandleSignalsDecisionService(ISettingsService<Settings> settingsService, ISettingsService<CandleSignalsSettings> candleSettingsService)
         {
-            _settings = settings;
-            _pairSettings = pairSettings;
-            _walletBalanceCurrency = pairSettings.CurrencyAmount;
-            _walletBalanceCrypto = 0;
+            _settings = settingsService.GetSettings();
+            _candleSettings = candleSettingsService.GetSettings();
 
             _decisionsSubject = new Subject<OrderDecision>();
+            _pairServices = new Dictionary<TradingPair, PairDecisionService>();
         }
 
         public void Subscribe(IObservable<Trade> inputStream)
         {
-            ICandleStorageService candleDataService = new CandleStorageService.CandleStorageService(new Settings());
-            candleDataService.Subscribe(inputStream);
-            candleDataService.OutputStream.Subscribe(MakeDecision);
+            inputStream.Subscribe(SetupPairDecisionService);
         }
 
-        private void MakeDecision(Trade[][] candles)
+        private void SetupPairDecisionService(Trade trade)
         {
-            var lastIndex = Array.FindLastIndex(candles, c => c.Length < _settings.MinTrades);
-            var validCandles = candles.TakeLast(candles.Length - lastIndex - 1);
-            var validCandlesCount = validCandles.Count();
-            if (validCandlesCount == 0)
-                return;
-
-            var validPatterns = _settings.Patterns.Where(p => p.Candles.Length <= validCandlesCount)
-                .OrderByDescending(p => p.Candles.Length);
-
-            foreach (var pattern in validPatterns)
+            var pair = trade.Pair;
+            if (_pairServices.ContainsKey(pair))
             {
-                var checkCandles = validCandles.TakeLast(pattern.Candles.Length)
-                    .ToArray();
-
-                var patternMissed = false;
-
-                for (int i = 0; i < pattern.Candles.Length; i++)
-                {
-                    var trades = checkCandles[i].OrderBy(c => c.DateTime)
-                        .ToArray();
-                    var candleProps = CalculateCandle(trades);
-
-                    var result = CheckPattern(candleProps, pattern.Candles[i]);
-                    if (!result)
-                    {
-                        patternMissed = true;
-                        break;
-                    }
-                }
-
-                if(patternMissed)
-                    continue;
-
-                ConstructDecision(pattern);
-                break;
-            }
-        }
-
-        private CandleProps CalculateCandle(Trade[] trades)
-        {
-            var candleProps = new CandleProps();
-
-            var min = trades.Min(t => t.Price);
-            var max = trades.Max(t => t.Price);
-
-            var openPrice = trades[0].Price;
-            var closePrice = trades[^1].Price;
-
-            if (openPrice > closePrice)
-                candleProps.Movement = CandleMovement.Red;
-            else if (openPrice < closePrice)
-                candleProps.Movement = CandleMovement.Green;
-            else
-                candleProps.Movement = CandleMovement.White;
-
-            var maxBodyPrice = openPrice > closePrice ? openPrice : closePrice;
-            var minBodyPrice = openPrice > closePrice ? closePrice : openPrice;
-
-            candleProps.UpperShadowPercent = (max - maxBodyPrice) / (max - min) * 100;
-            candleProps.LowerShadowPercent = (minBodyPrice - min) / (max - min) * 100;
-
-            return candleProps;
-        }
-
-        private bool CheckPattern(CandleProps candleProps, CandleProps patternProps)
-        {
-            if (candleProps.Movement != patternProps.Movement)
-                return false;
-
-            if (Math.Abs(candleProps.UpperShadowPercent - patternProps.UpperShadowPercent) > _settings.ErrorPercent)
-                return false;
-
-            if (Math.Abs(candleProps.LowerShadowPercent - patternProps.LowerShadowPercent) > _settings.ErrorPercent)
-                return false;
-
-            return true;
-        }
-
-        private void ConstructDecision(CandlePattern pattern)
-        {
-            if (pattern.Signal == CandleSignal.Buy && _walletBalanceCurrency == 0)
+                _pairServices[pair].StoreTrade(trade);
                 return;
-
-            if (pattern.Signal == CandleSignal.Sell && _walletBalanceCrypto == 0)
-                return;
-
-            var orderDecision = new OrderDecision();
-            orderDecision.Description = pattern.Name;
-            orderDecision.Pair = _pairSettings.TradingPair;
-
-            if (pattern.Signal == CandleSignal.Buy)
-            {
-                orderDecision.Type = TradeType.MarketBuyQuantity;
-                orderDecision.Quantity = _walletBalanceCurrency;
-            }
-            else
-            {
-                orderDecision.Type = TradeType.MarketSellQuantity;
-                orderDecision.Quantity = _walletBalanceCrypto;
             }
 
-            _decisionsSubject.OnNext(orderDecision);
+            var pairService = new PairDecisionService(pair, _candleSettings, _settings.Data);
+            pairService.OutputStream.Subscribe(_decisionsSubject);
+            _pairServices.Add(pair, pairService);
+            _pairServices[pair].StoreTrade(trade);
         }
     }
 }
