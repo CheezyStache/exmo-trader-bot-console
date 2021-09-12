@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace exmo_trader_bot_console.Models.PlatformAPI
+namespace exmo_trader_bot_console.Models.OrderData
 {
-    public enum APIType
+    public enum OrderExecType
     {
-        Orders,
-        Trades
+        Taker,
+        Maker
     }
 }

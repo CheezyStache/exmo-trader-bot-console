@@ -35,13 +35,13 @@ namespace exmo_trader_bot_console.Services.WebSocketService
         {
             switch (type)
             {
-                case APIType.Private:
+                case APIType.Orders:
                     _privateWebSocketService = service;
-                    await StartPrivateConnection();
+                    await StartOrdersConnection();
                     break;
-                case APIType.Public:
+                case APIType.Trades:
                     _publicWebSocketService = service;
-                    await StartPublicConnection();
+                    await StartTradesConnection();
                     break;
 
                 default:
@@ -49,21 +49,21 @@ namespace exmo_trader_bot_console.Services.WebSocketService
             }
         }
 
-        private async Task StartPublicConnection()
+        private async Task StartTradesConnection()
         {
             await _publicWebSocketService.Connect(_settings.Api.ConnectionUrlPublic);
-            await SendPublic();
+            await SendTrades();
             _publicWebSocketService.StartReceiveStream();
         }
 
-        private async Task StartPrivateConnection()
+        private async Task StartOrdersConnection()
         {
             await _privateWebSocketService.Connect(_settings.Api.ConnectionUrlPrivate);
-            await SendPrivate();
+            await SendOrders();
             _privateWebSocketService.StartReceiveStream();
         }
 
-        private async Task SendPublic()
+        private async Task SendTrades()
         {
             var tradingPairs = _settings.Pairs.Select(p => p.TradingPair)
                 .Select(p => $"\"spot/trades:{p.Crypto}_{p.Currency}\"")
@@ -74,7 +74,7 @@ namespace exmo_trader_bot_console.Services.WebSocketService
             await _publicWebSocketService.Send(command);
         }
 
-        private async Task SendPrivate()
+        private async Task SendOrders()
         {
             var apiKey = _settings.Api.Key;
             var nonce = DateTime.Now.Ticks;
@@ -86,7 +86,7 @@ namespace exmo_trader_bot_console.Services.WebSocketService
             await _privateWebSocketService.Send(loginCommand);
 
             var command =
-                $"{{\"id\":2,\"method\":\"subscribe\",\"topics\":[]}}";
+                $"{{\"id\":2,\"method\":\"subscribe\",\"topics\":[spot/user_trades]}}";
             await _privateWebSocketService.Send(command);
         }
     }

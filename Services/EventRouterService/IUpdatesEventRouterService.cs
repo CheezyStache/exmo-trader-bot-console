@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace exmo_trader_bot_console.Services.EventRouterService
 {
-    interface ITradesEventRouterService: IEventRouterService
+    interface IUpdatesEventRouterService: IEventRouterService
     {
     }
 }

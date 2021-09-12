@@ -27,7 +27,8 @@ namespace exmo_trader_bot_console
 
             using IHost host = CreateHostBuilder(args).Build();
 
-            Process.StartProcess(host.Services);
+            Process.StartTradesProcess(host.Services);
+            Process.StartOrdersProcess(host.Services);
 
             return host.RunAsync();
         }
@@ -40,16 +41,17 @@ namespace exmo_trader_bot_console
         {
             services.AddSingleton<ISettingsService<Settings>, MainSettingsService>()
                 .AddSingleton<ISettingsService<CandleSignalsSettings>, CandleSettingsService>()
-                .AddSingleton<IWebSocketService, WebSocketService>()
-                .AddSingleton<IDataWebSocketService, ExmoDataWebSocketService>()
-                .AddSingleton<IEventParserService, ExmoEventsParserService>()
-                .AddSingleton<ITradesEventRouterService, TradesEventRouterService>()
                 .AddSingleton<ITradesParserService, ExmoTradesParserService>()
                 .AddSingleton<IDataStorageService<Trade>, TradesDataStorageService>()
                 .AddSingleton<IDecisionService, CandleSignalsDecisionService>()
                 .AddSingleton<IOrderRequestService, ExmoOrderRequestService>()
                 .AddSingleton<IRestService, ExmoRestService>()
-                .AddSingleton<IOrderResponseParserService, ExmoOrderResponseParserService>();
+                .AddSingleton<IOrderResponseParserService, ExmoOrderResponseParserService>()
+                .AddSingleton<IOrderResultParserService, ExmoOrderResultParserService>()
+                .AddScoped<IWebSocketService, WebSocketService>()
+                .AddScoped<IDataWebSocketService, ExmoDataWebSocketService>()
+                .AddScoped<IEventParserService, ExmoEventsParserService>()
+                .AddScoped<IUpdatesEventRouterService, UpdatesEventRouterService>();
         }
     }
 }

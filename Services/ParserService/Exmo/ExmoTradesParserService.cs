@@ -55,6 +55,14 @@ namespace exmo_trader_bot_console.Services.ParserService.Exmo
                     return TradeType.Buy;
                 case "sell":
                     return TradeType.Sell;
+                case "market_buy":
+                    return TradeType.MarketBuyPrice;
+                case "market_sell":
+                    return TradeType.MarketSellPrice;
+                case "market_buy_total":
+                    return TradeType.MarketBuyQuantity;
+                case "market_sell_total":
+                    return TradeType.MarketSellQuantity;
 
                 default:
                     throw new NotImplementedException();
