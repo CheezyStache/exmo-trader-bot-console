@@ -5,12 +5,12 @@ using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
 using exmo_trader_bot_console.DecisionSystems.CandleSignals.Models;
-using exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.CandleStorageService;
 using exmo_trader_bot_console.Models.OrderData;
 using exmo_trader_bot_console.Models.Settings;
 using exmo_trader_bot_console.Models.TradingData;
 using exmo_trader_bot_console.Services.DecisionService;
 using exmo_trader_bot_console.Services.SettingsService;
+using exmo_trader_bot_console.Services.WalletService;
 
 namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.DecisionService
 {
@@ -22,11 +22,14 @@ namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.Decisio
         private readonly ISubject<OrderDecision> _decisionsSubject;
         private readonly CandleSignalsSettings _candleSettings;
         private readonly Settings _settings;
+        private readonly IWalletService _walletService;
 
-        public CandleSignalsDecisionService(ISettingsService<Settings> settingsService, ISettingsService<CandleSignalsSettings> candleSettingsService)
+        public CandleSignalsDecisionService(ISettingsService<Settings> settingsService,
+            ISettingsService<CandleSignalsSettings> candleSettingsService, IWalletService walletService)
         {
             _settings = settingsService.GetSettings();
             _candleSettings = candleSettingsService.GetSettings();
+            _walletService = walletService;
 
             _decisionsSubject = new Subject<OrderDecision>();
             _pairServices = new Dictionary<TradingPair, PairDecisionService>();
@@ -46,7 +49,7 @@ namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.Decisio
                 return;
             }
 
-            var pairService = new PairDecisionService(pair, _candleSettings, _settings.Data);
+            var pairService = new PairDecisionService(pair, _candleSettings, _settings.Data, _walletService);
             pairService.OutputStream.Subscribe(_decisionsSubject);
             _pairServices.Add(pair, pairService);
             _pairServices[pair].StoreTrade(trade);

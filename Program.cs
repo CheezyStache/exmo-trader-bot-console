@@ -13,6 +13,7 @@ using exmo_trader_bot_console.Services.ParserService.Exmo;
 using exmo_trader_bot_console.Services.RequestService;
 using exmo_trader_bot_console.Services.RESTService;
 using exmo_trader_bot_console.Services.SettingsService;
+using exmo_trader_bot_console.Services.WalletService;
 using exmo_trader_bot_console.Services.WebSocketService;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -48,6 +49,7 @@ namespace exmo_trader_bot_console
                 .AddSingleton<IRestService, ExmoRestService>()
                 .AddSingleton<IOrderResponseParserService, ExmoOrderResponseParserService>()
                 .AddSingleton<IOrderResultParserService, ExmoOrderResultParserService>()
+                .AddSingleton<IWalletService, WalletService>()
                 .AddScoped<IWebSocketService, WebSocketService>()
                 .AddScoped<IDataWebSocketService, ExmoDataWebSocketService>()
                 .AddScoped<IEventParserService, ExmoEventsParserService>()

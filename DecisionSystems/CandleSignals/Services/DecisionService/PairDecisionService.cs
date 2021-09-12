@@ -8,6 +8,7 @@ using exmo_trader_bot_console.Models.OrderData;
 using exmo_trader_bot_console.Models.Settings;
 using exmo_trader_bot_console.Models.TradingData;
 using exmo_trader_bot_console.Services;
+using exmo_trader_bot_console.Services.WalletService;
 
 namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.DecisionService
 {
@@ -18,9 +19,9 @@ namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.Decisio
         private readonly IStreamService<Trade[][], OrderDecision> _patternCheckService;
         private readonly CandleStorageService.CandleStorageService _candleStorageService;
 
-        public PairDecisionService(TradingPair pair, CandleSignalsSettings candleSettings, DataSettings settings)
+        public PairDecisionService(TradingPair pair, CandleSignalsSettings candleSettings, DataSettings settings, IWalletService walletService)
         {
-            _patternCheckService = new PatternCheckService(candleSettings, pair);
+            _patternCheckService = new PatternCheckService(candleSettings, pair, walletService);
             _candleStorageService = new CandleStorageService.CandleStorageService(settings);
 
             _patternCheckService.Subscribe(_candleStorageService.OutputStream);

@@ -8,6 +8,7 @@ using exmo_trader_bot_console.DecisionSystems.CandleSignals.Models;
 using exmo_trader_bot_console.Models.OrderData;
 using exmo_trader_bot_console.Models.TradingData;
 using exmo_trader_bot_console.Services;
+using exmo_trader_bot_console.Services.WalletService;
 
 namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.DecisionService
 {
@@ -18,13 +19,16 @@ namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.Decisio
         private readonly ISubject<OrderDecision> _decisionsSubject;
         private readonly CandleSignalsSettings _settings;
         private readonly TradingPair _pair;
+        private readonly IWalletService _walletService;
 
-        public PatternCheckService(CandleSignalsSettings settings, TradingPair tradingPair)
+        public PatternCheckService(CandleSignalsSettings settings, TradingPair tradingPair, IWalletService walletService)
         {
             _decisionsSubject = new Subject<OrderDecision>();
 
             _settings = settings;
             _pair = tradingPair;
+
+            _walletService = walletService;
         }
 
         public void Subscribe(IObservable<Trade[][]> inputStream)
@@ -114,10 +118,13 @@ namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.Decisio
 
         private void ConstructDecision(CandlePattern pattern)
         {
-            if (pattern.Signal == CandleSignal.Buy && _walletBalanceCurrency == 0)
+            var currencyBalance = _walletService.Wallet[_pair].Currency;
+            var cryptoBalance = _walletService.Wallet[_pair].Crypto;
+
+            if (pattern.Signal == CandleSignal.Buy && currencyBalance == 0)
                 return;
 
-            if (pattern.Signal == CandleSignal.Sell && _walletBalanceCrypto == 0)
+            if (pattern.Signal == CandleSignal.Sell && cryptoBalance == 0)
                 return;
 
             var orderDecision = new OrderDecision();
@@ -127,12 +134,12 @@ namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.Decisio
             if (pattern.Signal == CandleSignal.Buy)
             {
                 orderDecision.Type = TradeType.MarketBuyQuantity;
-                orderDecision.Quantity = _walletBalanceCurrency;
+                orderDecision.Quantity = currencyBalance;
             }
             else
             {
                 orderDecision.Type = TradeType.MarketSellQuantity;
-                orderDecision.Quantity = _walletBalanceCrypto;
+                orderDecision.Quantity = cryptoBalance;
             }
 
             _decisionsSubject.OnNext(orderDecision);

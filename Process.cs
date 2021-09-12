@@ -8,6 +8,7 @@ using exmo_trader_bot_console.Services.EventRouterService;
 using exmo_trader_bot_console.Services.ParserService;
 using exmo_trader_bot_console.Services.RequestService;
 using exmo_trader_bot_console.Services.RESTService;
+using exmo_trader_bot_console.Services.WalletService;
 using exmo_trader_bot_console.Services.WebSocketService;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -50,10 +51,12 @@ namespace exmo_trader_bot_console
             var eventParserService = provider.GetRequiredService<IEventParserService>();
             var updatesEventRouterService = provider.GetRequiredService<IUpdatesEventRouterService>();
             var orderResultParserService = provider.GetRequiredService<IOrderResultParserService>();
+            var walletService = provider.GetRequiredService<IWalletService>();
 
             eventParserService.Subscribe(dataWebSocketService.OutputStream);
             updatesEventRouterService.Subscribe(eventParserService.OutputStream);
             orderResultParserService.Subscribe(updatesEventRouterService.OutputStream);
+            walletService.Subscribe(orderResultParserService.OutputStream);
 
             dataWebSocketService.ConnectToApi(APIType.Orders);
         }
