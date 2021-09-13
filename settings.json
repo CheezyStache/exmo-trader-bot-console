@@ -1,0 +1,24 @@
+{
+  "api": {
+    "connectionUrlPublic": "wss://ws-api.exmo.com:443/v1/public",
+    "connectionUrlPrivate": "wss://ws-api.exmo.com:443/v1/private",
+    "orderCreatePrivate": "https://api.exmo.com/v1.1/order_create",
+    "key": "Your Exmo API Key",
+    "secretKey": "Your Exmo API Secret Key",
+    "feeTaker": 0.28,
+    "feeMaker": 0.2
+  },
+  "pairs": [
+    {
+      "currencyAmount": 10,
+      "tradingPair": {
+        "crypto": "XRP",
+        "currency": "USD"
+      }
+    }
+  ],
+  "data": {
+    "candleCount": 5,
+    "candleMinutes": 5
+  } 
+}
