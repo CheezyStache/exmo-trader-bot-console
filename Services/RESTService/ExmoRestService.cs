@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using exmo_trader_bot_console.Models.Settings;
+using exmo_trader_bot_console.Services.SettingsService;
 using RestSharp;
 
 namespace exmo_trader_bot_console.Services.RESTService
@@ -12,10 +13,10 @@ namespace exmo_trader_bot_console.Services.RESTService
     {
         private Settings _settings;
 
-        public ExmoRestService(Settings settings) : base(
-            settings.Api.OrderCreatePrivate, Method.POST)
+        public ExmoRestService(ISettingsService<Settings> settingsService) : base(
+            settingsService.GetSettings().Api.OrderCreatePrivate, Method.POST)
         {
-            _settings = settings;
+            _settings = settingsService.GetSettings();
         }
 
         protected override string ExecuteRequest(IRestRequest restRequest)

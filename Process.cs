@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reactive.Linq;
 using exmo_trader_bot_console.Models.PlatformAPI;
 using exmo_trader_bot_console.Models.TradingData;
 using exmo_trader_bot_console.Services.DataStorageService;
@@ -38,6 +37,7 @@ namespace exmo_trader_bot_console
             tradesParserService.Subscribe(updatesEventRouterService.OutputStream);
             tradesDataStorageService.Subscribe(tradesParserService.OutputStream);
             decisionService.Subscribe(tradesDataStorageService.OutputStream);
+            orderRequestService.Subscribe(decisionService.OutputStream);
             restService.Subscribe(orderRequestService.OutputStream);
             orderResponseParserService.Subscribe(restService.OutputStream);
 

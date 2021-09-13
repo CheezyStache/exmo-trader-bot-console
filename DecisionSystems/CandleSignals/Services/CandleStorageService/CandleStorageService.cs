@@ -48,6 +48,10 @@ namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.CandleS
         {
             var tradesArray = trades.ToArray();
 
+            var lastCandleTrade = _tradeCandles.Last().LastOrDefault();
+            if(lastCandleTrade != null) 
+                tradesArray = trades.Prepend(lastCandleTrade).ToArray();
+
             _tradeCandles = _tradeCandles.TakeLast(_candlesCount - 1)
                 .Append(tradesArray)
                 .ToArray();

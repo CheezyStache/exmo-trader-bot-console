@@ -10,6 +10,6 @@ namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.Setting
 {
     class CandleSettingsService : SettingsService<CandleSignalsSettings>
     {
-        private CandleSettingsService() : base("candlesSettings.json") { }
+        public CandleSettingsService() : base("candlesSettings.json") { }
     }
 }
