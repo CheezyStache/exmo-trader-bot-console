@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Net.WebSockets;
@@ -69,7 +70,10 @@ namespace exmo_trader_bot_console.Services.WebSocketService
                         } while (!result.EndOfMessage);
 
                         if (result.MessageType == WebSocketMessageType.Close)
+                        {
+                            _loggerService.OnInfo("Websocket closed", LoggerEvent.Info);
                             break;
+                        }
 
                         ms.Seek(0, SeekOrigin.Begin);
                         using (var reader = new StreamReader(ms, Encoding.UTF8))
@@ -80,14 +84,25 @@ namespace exmo_trader_bot_console.Services.WebSocketService
                     }
                 } while (_isReceiving);
             }
+            catch (WebSocketException e)
+            {
+                if (e.WebSocketErrorCode == WebSocketError.ConnectionClosedPrematurely)
+                    e.Data.Add("CanReconnect", true);
+
+                HandleException(e);
+                _loggerService.OnInfo("Trying to reconnect...", LoggerEvent.Error);
+            }
             catch (Exception e)
             {
-                _loggerService.OnInfo("Web socket caught an exception and stopped:", LoggerEvent.Error);
-                _loggerService.OnInfo(e.Message, LoggerEvent.Error);
-                StopSocket();
-                _receiveSubject.OnError(e);
-                throw;
+                HandleException(e);
             }
+        }
+
+        private void HandleException(Exception e)
+        {
+            _loggerService.OnException(e);
+            StopSocket();
+            _receiveSubject.OnError(e);
         }
 
         private void StopSocket()

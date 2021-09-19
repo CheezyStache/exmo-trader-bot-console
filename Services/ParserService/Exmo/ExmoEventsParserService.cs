@@ -19,7 +19,8 @@ namespace exmo_trader_bot_console.Services.ParserService.Exmo
 
         private ResponseWithEvent ParseResponseWithEvent(string response)
         {
-            var exmoResponse = JsonSerializer.Deserialize<ExmoSocketResponse>(response);
+            var exmoResponse = JsonSerializer.Deserialize<ExmoSocketResponse>(response,
+                new JsonSerializerOptions() {PropertyNamingPolicy = JsonNamingPolicy.CamelCase});
             var responseEvent = ParseEvent(exmoResponse.eventProperty);
 
             return new ResponseWithEvent(response, responseEvent);

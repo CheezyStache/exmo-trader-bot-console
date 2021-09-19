@@ -15,5 +15,7 @@ namespace exmo_trader_bot_console.Services.LoggerService
         void OnWalletChange(WalletChange walletChange);
         void OnOrderResult(bool result);
         void OnInfo(string info, LoggerEvent loggerEvent);
+        void OnException(Exception ex);
+        void OnError(ErrorResponse error);
     }
 }

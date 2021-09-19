@@ -18,7 +18,8 @@ namespace exmo_trader_bot_console.Services.ParserService.Exmo
 
         private bool ParseResponse(string response)
         {
-            var createResponse = JsonSerializer.Deserialize<ExmoOrderCreateResponse>(response);
+            var createResponse = JsonSerializer.Deserialize<ExmoOrderCreateResponse>(response,
+                new JsonSerializerOptions() {PropertyNamingPolicy = JsonNamingPolicy.CamelCase});
 
             return createResponse?.Result ?? false;
         }

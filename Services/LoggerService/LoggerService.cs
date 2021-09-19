@@ -30,6 +30,7 @@ namespace exmo_trader_bot_console.Services.LoggerService
 
         public void OnDecision(OrderDecision decision)
         {
+            PrintDate();
             WriteLine($"Decision was made: \"{decision.Description}\"", LoggerEvent.Info);
             if(decision.Type == TradeType.Buy || decision.Type == TradeType.MarketBuyPrice || decision.Type == TradeType.MarketBuyQuantity)
                 WriteLine("Buy", LoggerEvent.Buy);
@@ -42,6 +43,7 @@ namespace exmo_trader_bot_console.Services.LoggerService
 
         public void OnWalletChange(WalletChange walletChange)
         {
+            PrintDate();
             WriteLine("Wallet changed");
             WriteLine($"Pair: {walletChange.Pair.Crypto}_{walletChange.Pair.Currency}", LoggerEvent.Info);
 
@@ -61,6 +63,7 @@ namespace exmo_trader_bot_console.Services.LoggerService
 
         public void OnOrderResult(bool result)
         {
+            PrintDate();
             WriteLine("Order result is");
             if(result)
                 WriteLine("Success", LoggerEvent.Info);
@@ -70,7 +73,23 @@ namespace exmo_trader_bot_console.Services.LoggerService
 
         public void OnInfo(string info, LoggerEvent loggerEvent)
         {
+            PrintDate();
             WriteLine(info, loggerEvent);
+        }
+
+        public void OnException(Exception ex)
+        {
+            PrintDate();
+            WriteLine("Exception occurred:", LoggerEvent.Error);
+            WriteLine(ex.Source, LoggerEvent.Error);
+            WriteLine(ex.Message, LoggerEvent.Error);
+        }
+
+        public void OnError(ErrorResponse error)
+        {
+            PrintDate();
+            WriteLine("Error returned from server:", LoggerEvent.Error);
+            WriteLine(error.Message, LoggerEvent.Error);
         }
 
         private void ShowBalance()
@@ -98,6 +117,12 @@ namespace exmo_trader_bot_console.Services.LoggerService
         {
             Console.ForegroundColor = (ConsoleColor)loggerEvent;
             Console.WriteLine(message);
+        }
+
+        private void PrintDate()
+        {
+            WriteLine();
+            WriteLine(DateTime.Now.ToString("yyyy/MM/dd hh:mm:ss"));
         }
     }
 }

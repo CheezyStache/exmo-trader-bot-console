@@ -24,8 +24,6 @@ namespace exmo_trader_bot_console.Services.ParserService.Exmo
             var exmoResponse = JsonSerializer.Deserialize<ExmoSocketResponse<ExmoUserTrades>>(response,
                 new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
 
-            var topic = exmoResponse.topic;
-
             return GetByExmoUserTrade(exmoResponse.data);
         }
 

@@ -25,5 +25,12 @@ namespace exmo_trader_bot_console.Models.Settings
             byte[] b = hmac.ComputeHash(Encoding.UTF8.GetBytes(Key + Convert.ToString(nonce)));
             return Convert.ToBase64String(b);
         }
+
+        public string GetSign(string content)
+        {
+            using HMACSHA512 hmac = new HMACSHA512(Encoding.UTF8.GetBytes(SecretKey));
+            byte[] hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(content));
+            return BitConverter.ToString(hash).Replace("-", "").ToLower();
+        }
     }
 }

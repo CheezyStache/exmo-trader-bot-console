@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reactive.Linq;
 using exmo_trader_bot_console.Models.PlatformAPI;
 using exmo_trader_bot_console.Models.TradingData;
 using exmo_trader_bot_console.Services.DataStorageService;
@@ -32,6 +33,9 @@ namespace exmo_trader_bot_console
             var orderResponseParserService = provider.GetRequiredService<IOrderResponseParserService>();
             var loggerService = provider.GetRequiredService<ILoggerService>();
 
+            var errorsEventRouterService = provider.GetRequiredService<IErrorsEventRouterService>();
+            var errorParserService = provider.GetRequiredService<IErrorParserService>();
+
             eventParserService.Subscribe(dataWebSocketService.OutputStream);
             updatesEventRouterService.Subscribe(eventParserService.OutputStream);
             tradesParserService.Subscribe(updatesEventRouterService.OutputStream);
@@ -41,8 +45,17 @@ namespace exmo_trader_bot_console
             restService.Subscribe(orderRequestService.OutputStream);
             orderResponseParserService.Subscribe(restService.OutputStream);
 
-            decisionService.OutputStream.Subscribe(loggerService.OnDecision);
-            orderResponseParserService.OutputStream.Subscribe(loggerService.OnOrderResult);
+            decisionService.OutputStream.Zip(orderResponseParserService.OutputStream)
+                .Subscribe(observer =>
+                    {
+                        loggerService.OnDecision(observer.First);
+                        loggerService.OnOrderResult(observer.Second);
+                    },
+                    loggerService.OnException);
+
+            errorsEventRouterService.Subscribe(eventParserService.OutputStream);
+            errorParserService.Subscribe(errorsEventRouterService.OutputStream);
+            errorParserService.OutputStream.Subscribe(loggerService.OnError, loggerService.OnException);
 
             dataWebSocketService.ConnectToApi(APIType.Trades);
         }
@@ -59,12 +72,19 @@ namespace exmo_trader_bot_console
             var walletService = provider.GetRequiredService<IWalletService>();
             var loggerService = provider.GetRequiredService<ILoggerService>();
 
+            var errorsEventRouterService = provider.GetRequiredService<IErrorsEventRouterService>();
+            var errorParserService = provider.GetRequiredService<IErrorParserService>();
+
             eventParserService.Subscribe(dataWebSocketService.OutputStream);
             updatesEventRouterService.Subscribe(eventParserService.OutputStream);
             orderResultParserService.Subscribe(updatesEventRouterService.OutputStream);
             walletService.Subscribe(orderResultParserService.OutputStream);
 
-            walletService.OutputStream.Subscribe(loggerService.OnWalletChange);
+            walletService.OutputStream.Subscribe(loggerService.OnWalletChange, loggerService.OnException);
+
+            errorsEventRouterService.Subscribe(eventParserService.OutputStream);
+            errorParserService.Subscribe(errorsEventRouterService.OutputStream);
+            errorParserService.OutputStream.Subscribe(loggerService.OnError, loggerService.OnException);
 
             dataWebSocketService.ConnectToApi(APIType.Orders);
         }

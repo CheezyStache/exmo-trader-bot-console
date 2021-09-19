@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
 using exmo_trader_bot_console.Models.PlatformAPI;
@@ -9,26 +10,45 @@ using exmo_trader_bot_console.Services.SettingsService;
 
 namespace exmo_trader_bot_console.Services.WebSocketService
 {
-    public class ExmoDataWebSocketService: BaseOutputStreamService<string>, IDataWebSocketService
+    public class ExmoDataWebSocketService: IDataWebSocketService
     {
         private readonly Settings _settings;
         private readonly IWebSocketService _webSocketService;
         private IWebSocketService _privateWebSocketService;
         private IWebSocketService _publicWebSocketService;
+        private readonly ISubject<string> _webSocketSubject;
+        private IDisposable _streamConnection;
+
+        public IObservable<string> OutputStream => _webSocketSubject;
 
         public ExmoDataWebSocketService(ISettingsService<Settings> settings, IWebSocketService webSocketService)
         {
             _settings = settings.GetSettings();
             _webSocketService = webSocketService;
+            _webSocketSubject = new Subject<string>();
         }
 
         public void Subscribe(IObservable<object> inputStream) { }
-
+        
         public void ConnectToApi(APIType type)
         {
-            OutputStream = _webSocketService.OutputStream;
+            _streamConnection =
+                _webSocketService.OutputStream.Subscribe(_webSocketSubject.OnNext, ex => OnWebSocketError(ex, type));
 
             Task.Run(() => StartConnection(type, _webSocketService));
+        }
+
+        private void OnWebSocketError(Exception ex, APIType type)
+        {
+            if (ex.Data.Contains("CanReconnect") && (bool) ex.Data["CanReconnect"])
+            {
+                _streamConnection.Dispose();
+                ConnectToApi(type);
+                return;
+            }
+
+            _streamConnection.Dispose();
+            _webSocketSubject.OnError(ex);
         }
 
         private async Task StartConnection(APIType type, IWebSocketService service)
@@ -86,7 +106,7 @@ namespace exmo_trader_bot_console.Services.WebSocketService
             await _privateWebSocketService.Send(loginCommand);
 
             var command =
-                $"{{\"id\":2,\"method\":\"subscribe\",\"topics\":[spot/user_trades]}}";
+                $"{{\"id\":2,\"method\":\"subscribe\",\"topics\":[\"spot/user_trades\"]}}";
             await _privateWebSocketService.Send(command);
         }
     }

@@ -18,6 +18,7 @@ using exmo_trader_bot_console.Services.WalletService;
 using exmo_trader_bot_console.Services.WebSocketService;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace exmo_trader_bot_console
 {
@@ -37,7 +38,8 @@ namespace exmo_trader_bot_console
 
         static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureServices(ConfigureAppServices);
+                .ConfigureServices(ConfigureAppServices)
+                .ConfigureLogging(loggingBuilder => loggingBuilder.ClearProviders());
 
         static void ConfigureAppServices(HostBuilderContext _, IServiceCollection services)
         {
@@ -55,7 +57,9 @@ namespace exmo_trader_bot_console
                 .AddScoped<IWebSocketService, WebSocketService>()
                 .AddScoped<IDataWebSocketService, ExmoDataWebSocketService>()
                 .AddScoped<IEventParserService, ExmoEventsParserService>()
-                .AddScoped<IUpdatesEventRouterService, UpdatesEventRouterService>();
+                .AddScoped<IUpdatesEventRouterService, UpdatesEventRouterService>()
+                .AddScoped<IErrorsEventRouterService, ErrorsEventRouterService>()
+                .AddScoped<IErrorParserService, ExmoErrorParserService>();
         }
     }
 }
