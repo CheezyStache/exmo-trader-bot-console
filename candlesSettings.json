@@ -5,6 +5,7 @@
     {
       "name": "Evening Star",
       "signal": 1,
+      "candleMinutes": 5,
       "candles": [
         {
           "upperShadowPercent": 0,
@@ -26,6 +27,7 @@
     {
       "name": "Three Inside Up",
       "signal": 0,
+      "candleMinutes": 5,
       "candles": [
         {
           "upperShadowPercent": 15,
@@ -47,6 +49,7 @@
     {
       "name": "Three Outside Down",
       "signal": 1,
+      "candleMinutes": 5,
       "candles": [
         {
           "upperShadowPercent": 15,
@@ -68,6 +71,7 @@
     {
       "name": "Hammer",
       "signal": 0,
+      "candleMinutes": 30,
       "candles": [
         {
           "upperShadowPercent": 0,
@@ -79,6 +83,7 @@
     {
       "name": "Hanging Man",
       "signal": 1,
+      "candleMinutes": 30,
       "candles": [
         {
           "upperShadowPercent": 0,
@@ -90,6 +95,7 @@
     {
       "name": "Shooting Star",
       "signal": 1,
+      "candleMinutes": 30,
       "candles": [
         {
           "upperShadowPercent": 85,
@@ -101,6 +107,7 @@
     {
       "name": "Morning Star",
       "signal": 0,
+      "candleMinutes": 5,
       "candles": [
         {
           "upperShadowPercent": 0,
@@ -122,6 +129,7 @@
     {
       "name": "Bearish Breakaway",
       "signal": 1,
+      "candleMinutes": 5,
       "candles": [
         {
           "upperShadowPercent": 0,
@@ -153,6 +161,7 @@
     {
       "name": "Bullish Breakaway",
       "signal": 0,
+      "candleMinutes": 5,
       "candles": [
         {
           "upperShadowPercent": 0,

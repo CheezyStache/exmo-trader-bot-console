@@ -18,15 +18,18 @@ namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.Decisio
 
         private readonly ISubject<OrderDecision> _decisionsSubject;
         private readonly CandleSignalsSettings _settings;
+        private readonly IEnumerable<CandlePattern> _candlePatterns;
         private readonly TradingPair _pair;
         private readonly IWalletService _walletService;
 
-        public PatternCheckService(CandleSignalsSettings settings, TradingPair tradingPair, IWalletService walletService)
+        public PatternCheckService(CandleSignalsSettings settings, IEnumerable<CandlePattern> candlePatterns,
+            TradingPair tradingPair, IWalletService walletService)
         {
             _decisionsSubject = new Subject<OrderDecision>();
 
             _settings = settings;
             _pair = tradingPair;
+            _candlePatterns = candlePatterns;
 
             _walletService = walletService;
         }
@@ -44,7 +47,7 @@ namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.Decisio
             if (validCandlesCount == 0)
                 return;
 
-            var validPatterns = _settings.Patterns.Where(p => p.Candles.Length <= validCandlesCount)
+            var validPatterns = _candlePatterns.Where(p => p.Candles.Length <= validCandlesCount)
                 .OrderByDescending(p => p.Candles.Length);
 
             foreach (var pattern in validPatterns)

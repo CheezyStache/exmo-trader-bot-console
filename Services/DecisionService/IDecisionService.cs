@@ -10,6 +10,6 @@ namespace exmo_trader_bot_console.Services.DecisionService
 {
     interface IDecisionService: IStreamService<Trade, OrderDecision>
     {
-
+        void SubscribeToResultStream(IObservable<bool> resultStream);
     }
 }

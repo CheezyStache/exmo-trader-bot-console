@@ -17,9 +17,10 @@ namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.Decisio
     class CandleSignalsDecisionService: IDecisionService
     {
         public IObservable<OrderDecision> OutputStream => _decisionsSubject;
-
+        
         private readonly IDictionary<TradingPair, PairDecisionService> _pairServices;
         private readonly ISubject<OrderDecision> _decisionsSubject;
+        private readonly ISubject<bool> _resultsSubject;
         private readonly CandleSignalsSettings _candleSettings;
         private readonly Settings _settings;
         private readonly IWalletService _walletService;
@@ -31,6 +32,7 @@ namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.Decisio
             _candleSettings = candleSettingsService.GetSettings();
             _walletService = walletService;
 
+            _resultsSubject = new Subject<bool>();
             _decisionsSubject = new Subject<OrderDecision>();
             _pairServices = new Dictionary<TradingPair, PairDecisionService>();
         }
@@ -38,6 +40,11 @@ namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.Decisio
         public void Subscribe(IObservable<Trade> inputStream)
         {
             inputStream.Subscribe(SetupPairDecisionService);
+        }
+
+        public void SubscribeToResultStream(IObservable<bool> resultStream)
+        {
+            resultStream.Subscribe(_resultsSubject);
         }
 
         private void SetupPairDecisionService(Trade trade)

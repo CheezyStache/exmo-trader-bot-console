@@ -41,6 +41,7 @@ namespace exmo_trader_bot_console
             tradesParserService.Subscribe(updatesEventRouterService.OutputStream);
             tradesDataStorageService.Subscribe(tradesParserService.OutputStream);
             decisionService.Subscribe(tradesDataStorageService.OutputStream);
+            decisionService.SubscribeToResultStream(orderResponseParserService.OutputStream);
             orderRequestService.Subscribe(decisionService.OutputStream);
             restService.Subscribe(orderRequestService.OutputStream);
             orderResponseParserService.Subscribe(restService.OutputStream);

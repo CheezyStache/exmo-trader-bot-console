@@ -12,5 +12,6 @@ namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Models
         public string Name { get; set; }
         public CandleSignal Signal { get; set; }
         public CandleProps[] Candles { get; set; }
+        public int CandleMinutes { get; set; }
     }
 }

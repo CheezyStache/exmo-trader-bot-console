@@ -22,11 +22,9 @@ namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.CandleS
         private readonly ISubject<Trade> _inputStream;
         private IObservable<IList<Trade>> _bufferStream;
 
-        public CandleStorageService(DataSettings settings)
+        public CandleStorageService(int candlesCount, int candlesMinutes)
         {
-            var candleSystemSettings = settings;
-            _candlesCount = candleSystemSettings.CandleCount;
-            var candlesMinutes = candleSystemSettings.CandleMinutes;
+            _candlesCount = candlesCount;
 
             _tradeCandles = new Trade[_candlesCount][];
             for (int i = 0; i < _candlesCount; i++)
