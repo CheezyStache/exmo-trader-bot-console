@@ -22,7 +22,8 @@ namespace exmo_trader_bot_console.Services.LoggerService
             _initialWallet = new Dictionary<TradingPair, PairWallet>();
             foreach (var key in walletService.Wallet.Keys)
             {
-                _initialWallet.Add(key, walletService.Wallet[key]);
+                var pairWallet = new PairWallet(walletService.Wallet[key].Crypto, walletService.Wallet[key].Currency);
+                _initialWallet.Add(key, pairWallet);
             }
 
             ShowBalance();

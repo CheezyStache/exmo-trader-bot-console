@@ -17,7 +17,7 @@ namespace exmo_trader_bot_console.Services.WalletService
         public IObservable<WalletChange> OutputStream => _walletChangeSubject;
         public IDictionary<TradingPair, PairWallet> Wallet { get; }
 
-        private ISubject<WalletChange> _walletChangeSubject;
+        private readonly ISubject<WalletChange> _walletChangeSubject;
 
         public WalletService(ISettingsService<Settings> settingsService)
         {
@@ -41,11 +41,13 @@ namespace exmo_trader_bot_console.Services.WalletService
         {
             if (result.Type == TradeType.Buy || result.Type == TradeType.MarketBuyPrice || result.Type == TradeType.MarketBuyQuantity)
             {
-                _walletChangeSubject.OnNext(new WalletChange(result.Pair,
-                    new PairWallet(result.Quantity, -Wallet[result.Pair].Currency)));
+                var oldCurrency = Wallet[result.Pair].Currency;
 
                 Wallet[result.Pair].Crypto = result.Quantity;
                 Wallet[result.Pair].Currency = 0;
+
+                _walletChangeSubject.OnNext(new WalletChange(result.Pair,
+                    new PairWallet(result.Quantity, -oldCurrency)));
 
                 return;
             }
@@ -53,11 +55,13 @@ namespace exmo_trader_bot_console.Services.WalletService
             if (result.Type == TradeType.Sell || result.Type == TradeType.MarketSellPrice ||
                 result.Type == TradeType.MarketSellQuantity)
             {
-                _walletChangeSubject.OnNext(new WalletChange(result.Pair,
-                    new PairWallet(-Wallet[result.Pair].Crypto, result.Amount)));
+                var oldCrypto = Wallet[result.Pair].Crypto;
 
                 Wallet[result.Pair].Crypto = 0;
                 Wallet[result.Pair].Currency = result.Amount;
+
+                _walletChangeSubject.OnNext(new WalletChange(result.Pair,
+                    new PairWallet(-oldCrypto, result.Amount)));
 
                 return;
             }

@@ -141,7 +141,7 @@ namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.Decisio
             }
             else
             {
-                orderDecision.Type = TradeType.MarketSellQuantity;
+                orderDecision.Type = TradeType.MarketSellPrice;
                 orderDecision.Quantity = cryptoBalance;
             }
 
