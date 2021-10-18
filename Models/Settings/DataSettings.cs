@@ -8,7 +8,7 @@ namespace exmo_trader_bot_console.Models.Settings
 {
     public class DataSettings
     {
-        public int CandleCount { get; set; }
-        public int CandleMinutes { get; set; }
+        public int Resolution { get; set; }
+        public int StartCandles { get; set; }
     }
 }

@@ -12,12 +12,10 @@ namespace exmo_trader_bot_console.Models.Settings
         public string ConnectionUrlPublic { get; set; }
         public string ConnectionUrlPrivate { get; set; }
         public string OrderCreatePrivate { get; set; }
+        public string CandlesHistoryPublic { get; set; }
 
         public string Key { get; set; }
         public string SecretKey { get; set; }
-
-        public double FeeTaker { get; set; }
-        public double FeeMaker { get; set; }
 
         public string GetSign(long nonce)
         {
