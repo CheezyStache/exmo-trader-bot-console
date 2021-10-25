@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace exmo_trader_bot_console.Services.WebSocketService
+namespace exmo_trader_bot_console.Services.WebSocket
 {
-    public interface IWebSocketService: IStreamService<object, string>
+    public interface IWebSocketService: IOutputService<string>
     {
         Task Send(string data);
         Task Connect(string url);

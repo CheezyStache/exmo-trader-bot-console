@@ -16,7 +16,7 @@ namespace exmo_trader_bot_console.Services.CandleHistory
 {
     class CandleHistoryService: ICandleHistoryService
     {
-        private Settings _settings;
+        private readonly Settings _settings;
 
         public IObservable<CandlesSet> OutputStream { get; }
 

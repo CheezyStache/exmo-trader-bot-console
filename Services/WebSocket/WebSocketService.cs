@@ -11,26 +11,25 @@ using System.Threading.Tasks;
 using exmo_trader_bot_console.Models.Internal;
 using exmo_trader_bot_console.Services.LoggerService;
 
-namespace exmo_trader_bot_console.Services.WebSocketService
+namespace exmo_trader_bot_console.Services.WebSocket
 {
-    public class WebSocketService : IWebSocketService
+    public abstract class WebSocketService
     {
-        public IObservable<string> OutputStream => _receiveSubject;
-        public void Subscribe(IObservable<object> inputStream) { }
-
         private readonly ILoggerService _loggerService;
-        private readonly Subject<string> _receiveSubject;
+        protected readonly Subject<string> ReceiveSubject;
+
         private ClientWebSocket _socket;
+
         private bool _isReceiving;
         private Task _receiveTask;
 
-        public WebSocketService(ILoggerService loggerService)
+        protected WebSocketService(ILoggerService loggerService)
         {
-            _receiveSubject = new Subject<string>();
+            ReceiveSubject = new Subject<string>();
             _loggerService = loggerService;
         }
 
-        public Task Connect(string url)
+        protected Task Connect(string url)
         {
             if (_socket != null)
                 throw new Exception("Web socket service has been already connected");
@@ -40,13 +39,13 @@ namespace exmo_trader_bot_console.Services.WebSocketService
             return _socket.ConnectAsync(new Uri(url), CancellationToken.None);
         }
 
-        public Task Send(string data)
+        protected Task Send(string data)
         {
             return _socket.SendAsync(Encoding.UTF8.GetBytes(data), WebSocketMessageType.Text, true,
                 CancellationToken.None);
         }
 
-        public void StartReceiveStream()
+        protected void StartReceiveStream()
         {
             _isReceiving = true;
             _receiveTask = Task.Run(StartReceiveProcess);
@@ -79,18 +78,10 @@ namespace exmo_trader_bot_console.Services.WebSocketService
                         using (var reader = new StreamReader(ms, Encoding.UTF8))
                         {
                             var response = await reader.ReadToEndAsync();
-                            _receiveSubject.OnNext(response);
+                            ReceiveSubject.OnNext(response);
                         }
                     }
                 } while (_isReceiving);
-            }
-            catch (WebSocketException e)
-            {
-                if (e.WebSocketErrorCode == WebSocketError.ConnectionClosedPrematurely)
-                    e.Data.Add("CanReconnect", true);
-
-                HandleException(e);
-                _loggerService.OnInfo("Trying to reconnect...", LoggerEvent.Error);
             }
             catch (Exception e)
             {
@@ -100,9 +91,9 @@ namespace exmo_trader_bot_console.Services.WebSocketService
 
         private void HandleException(Exception e)
         {
-            _loggerService.OnException(e);
             StopSocket();
-            _receiveSubject.OnError(e);
+            _loggerService.OnException(e);
+            ReceiveSubject.OnError(e);
         }
 
         private void StopSocket()
