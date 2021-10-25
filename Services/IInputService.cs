@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace exmo_trader_bot_console.Services.EventRouterService
+namespace exmo_trader_bot_console.Services
 {
-    interface IErrorsEventRouterService: IEventRouterService
+    public interface IInputService<in T>
     {
+        void Subscribe(IObservable<T> inputStream);
     }
 }

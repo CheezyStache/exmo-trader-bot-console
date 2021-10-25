@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace exmo_trader_bot_console.Services
 {
-    public interface IStreamService<in T, out TS>: IOutputService<TS>
+    public interface IStreamService<in T, out TS>: IInputService<T>, IOutputService<TS>,
     {
-        void Subscribe(IObservable<T> inputStream);
     }
 }
