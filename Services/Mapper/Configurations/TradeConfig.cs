@@ -2,49 +2,35 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Reactive.Linq;
 using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
+using AutoMapper;
 using exmo_trader_bot_console.Models.Exmo;
 using exmo_trader_bot_console.Models.TradingData;
+using exmo_trader_bot_console.Utils;
 using TraderBot.Models.Exmo;
 
-namespace exmo_trader_bot_console.Services.ParserService.Exmo
+namespace exmo_trader_bot_console.Services.Mapper.Configurations
 {
-    public class ExmoTradesParserService: BaseOutputStreamService<Trade>, ITradesParserService
+    class TradeConfig
     {
-        public void Subscribe(IObservable<string> inputStream)
+        public TradeConfig(IMapperConfigurationExpression cfg)
         {
-            OutputStream = inputStream.SelectMany(ParseResponse);
-        }
-
-        private IEnumerable<Trade> ParseResponse(string response)
-        {
-            var exmoResponse = JsonSerializer.Deserialize<ExmoSocketResponse<ExmoTrades[]>>(response,
-                new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
-
-            var topic = exmoResponse.topic;
-
-            return exmoResponse.data.Select(d => GetByExmoTrade(d, topic));
+            cfg.CreateMap<ExmoSocketResponse<ExmoTrades[]>, IEnumerable<Trade>>()
+                .ForMember(dest => dest,
+                    opt => opt.MapFrom(src => src.data.Select(d => GetByExmoTrade(d, src.topic))));
         }
 
         private Trade GetByExmoTrade(ExmoTrades exmoTrade, string topic)
         {
-            var date = ParseDate(exmoTrade.date);
+            var date = DateUtils.GetDate(exmoTrade.date);
             var type = ParseTradeType(exmoTrade.type);
-            var price = ParseDouble(exmoTrade.price);
-            var quantity = ParseDouble(exmoTrade.quantity);
-            var amount = ParseDouble(exmoTrade.amount);
+            var price = NumberUtils.ParseDouble(exmoTrade.price);
+            var quantity = NumberUtils.ParseDouble(exmoTrade.quantity);
+            var amount = NumberUtils.ParseDouble(exmoTrade.amount);
             var pair = ParsePair(topic);
 
             return new Trade(type, price, quantity, amount, date, pair);
-        }
-
-        private DateTime ParseDate(long date)
-        {
-            date *= 1000;
-            return new DateTime(1970, 01, 01).AddMilliseconds(date);
         }
 
         private TradeType ParseTradeType(string type)
@@ -67,11 +53,6 @@ namespace exmo_trader_bot_console.Services.ParserService.Exmo
                 default:
                     throw new NotImplementedException();
             }
-        }
-
-        private double ParseDouble(string number)
-        {
-            return Convert.ToDouble(number, CultureInfo.InvariantCulture);
         }
 
         private TradingPair ParsePair(string topic)

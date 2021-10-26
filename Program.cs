@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using AutoMapper;
 using exmo_trader_bot_console.DecisionSystems.CandleSignals.Models;
 using exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.DecisionService;
 using exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.SettingsService;
@@ -9,12 +10,14 @@ using exmo_trader_bot_console.Services.DataStorageService;
 using exmo_trader_bot_console.Services.DecisionService;
 using exmo_trader_bot_console.Services.EventRouterService;
 using exmo_trader_bot_console.Services.LoggerService;
+using exmo_trader_bot_console.Services.Mapper;
 using exmo_trader_bot_console.Services.ParserService;
 using exmo_trader_bot_console.Services.ParserService.Exmo;
 using exmo_trader_bot_console.Services.RequestService;
 using exmo_trader_bot_console.Services.RESTService;
 using exmo_trader_bot_console.Services.SettingsService;
 using exmo_trader_bot_console.Services.WalletService;
+using exmo_trader_bot_console.Services.WebSocket;
 using exmo_trader_bot_console.Services.WebSocketService;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -43,6 +46,9 @@ namespace exmo_trader_bot_console
 
         static void ConfigureAppServices(HostBuilderContext _, IServiceCollection services)
         {
+            var mapperConfiguration = new MapperConfigurationService();
+            var mapper = mapperConfiguration.CreateMapper();
+
             services.AddSingleton<ISettingsService<Settings>, MainSettingsService>()
                 .AddSingleton<ISettingsService<CandleSignalsSettings>, CandleSettingsService>()
                 .AddSingleton<ITradesParserService, ExmoTradesParserService>()
@@ -54,6 +60,7 @@ namespace exmo_trader_bot_console
                 .AddSingleton<IOrderResultParserService, ExmoOrderResultParserService>()
                 .AddSingleton<IWalletService, WalletService>()
                 .AddSingleton<ILoggerService, LoggerService>()
+                .AddSingleton(mapper)
                 .AddScoped<IWebSocketService, WebSocketService>()
                 .AddScoped<IDataWebSocketService, ExmoDataWebSocketService>()
                 .AddScoped<IEventParserService, ExmoEventsParserService>()
