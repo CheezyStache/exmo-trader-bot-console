@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace exmo_trader_bot_console.Services.SettingsService
+namespace exmo_trader_bot_console.Services.Settings
 {
     public class SettingsService<T>: ISettingsService<T> where T: class
     {

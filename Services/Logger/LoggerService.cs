@@ -9,7 +9,7 @@ using exmo_trader_bot_console.Models.TradingData;
 using exmo_trader_bot_console.Models.Wallet;
 using exmo_trader_bot_console.Services.WalletService;
 
-namespace exmo_trader_bot_console.Services.LoggerService
+namespace exmo_trader_bot_console.Services.Logger
 {
     class LoggerService: ILoggerService
     {

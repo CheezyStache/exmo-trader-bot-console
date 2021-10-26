@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 using exmo_trader_bot_console.Models.Candles;
 using exmo_trader_bot_console.Models.Settings;
 using exmo_trader_bot_console.Models.TradingData;
-using exmo_trader_bot_console.Services.SettingsService;
+using exmo_trader_bot_console.Services.Settings;
 
 namespace exmo_trader_bot_console.Services.DataStorage
 {
     public class DataStorageService: IDataStorageService
     {
         private readonly IDictionary<TradingPair, IDictionary<int, IObservable<Candle[]>>> _candleDictionary;
-        private readonly Settings _settings;
+        private readonly Models.Settings.Settings _settings;
 
-        public DataStorageService(ISettingsService<Settings> settingsService)
+        public DataStorageService(ISettingsService<Models.Settings.Settings> settingsService)
         {
             _candleDictionary = new Dictionary<TradingPair, IDictionary<int, IObservable<Candle[]>>>();
             _settings = settingsService.GetSettings();

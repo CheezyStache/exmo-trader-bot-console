@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using exmo_trader_bot_console.Models.Candles;
 using exmo_trader_bot_console.Models.Settings;
 using exmo_trader_bot_console.Models.TradingData;
-using exmo_trader_bot_console.Services.SettingsService;
+using exmo_trader_bot_console.Services.Settings;
 using exmo_trader_bot_console.Utils;
 using RestSharp;
 
@@ -17,12 +17,12 @@ namespace exmo_trader_bot_console.Services.CandleHistory
 {
     class CandleHistoryService : ICandleHistoryService
     {
-        private readonly Settings _settings;
+        private readonly Models.Settings.Settings _settings;
         private readonly ISubject<CandlesSet> _candleSubject;
 
         public IObservable<CandlesSet> OutputStream => _candleSubject;
 
-        public CandleHistoryService(ISettingsService<Settings> settingsService)
+        public CandleHistoryService(ISettingsService<Models.Settings.Settings> settingsService)
         {
             _settings = settingsService.GetSettings();
         }

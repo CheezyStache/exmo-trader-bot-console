@@ -7,7 +7,7 @@ using exmo_trader_bot_console.Models.Internal;
 using exmo_trader_bot_console.Models.OrderData;
 using exmo_trader_bot_console.Models.Wallet;
 
-namespace exmo_trader_bot_console.Services.LoggerService
+namespace exmo_trader_bot_console.Services.Logger
 {
     public interface ILoggerService
     {
