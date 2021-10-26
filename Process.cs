@@ -2,15 +2,14 @@
 using System.Reactive.Linq;
 using exmo_trader_bot_console.Models.PlatformAPI;
 using exmo_trader_bot_console.Models.TradingData;
+using exmo_trader_bot_console.Services.CandleHistory;
 using exmo_trader_bot_console.Services.DataStorageService;
 using exmo_trader_bot_console.Services.DecisionService;
-using exmo_trader_bot_console.Services.EventRouterService;
 using exmo_trader_bot_console.Services.LoggerService;
-using exmo_trader_bot_console.Services.ParserService;
 using exmo_trader_bot_console.Services.RequestService;
 using exmo_trader_bot_console.Services.RESTService;
+using exmo_trader_bot_console.Services.TradesJson;
 using exmo_trader_bot_console.Services.WalletService;
-using exmo_trader_bot_console.Services.WebSocketService;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace exmo_trader_bot_console
@@ -21,6 +20,10 @@ namespace exmo_trader_bot_console
         {
             using IServiceScope serviceScope = services.CreateScope();
             IServiceProvider provider = serviceScope.ServiceProvider;
+
+            var candleHistoryService = provider.GetRequiredService<ICandleHistoryService>();
+            var tradeJsonService = provider.GetRequiredService<ITradesJsonService>();
+
 
             var dataWebSocketService = provider.GetRequiredService<IDataWebSocketService>();
             var eventParserService = provider.GetRequiredService<IEventParserService>();

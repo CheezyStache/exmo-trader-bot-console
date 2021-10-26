@@ -10,7 +10,6 @@ namespace exmo_trader_bot_console.Models.Settings
     public class Settings
     {
         public PlatformApiSettings Api { get; set; }
-        public TradingPairSettings[] Pairs { get; set; }
         public DataSettings[] Data { get; set; }
     }
 }

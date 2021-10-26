@@ -1,24 +1,22 @@
 ﻿using System;
 using System.Threading.Tasks;
-using AutoMapper;
 using exmo_trader_bot_console.DecisionSystems.CandleSignals.Models;
 using exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.DecisionService;
 using exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.SettingsService;
 using exmo_trader_bot_console.Models.Settings;
 using exmo_trader_bot_console.Models.TradingData;
+using exmo_trader_bot_console.Services.CandleHistory;
 using exmo_trader_bot_console.Services.DataStorageService;
 using exmo_trader_bot_console.Services.DecisionService;
-using exmo_trader_bot_console.Services.EventRouterService;
+using exmo_trader_bot_console.Services.EventRouter;
 using exmo_trader_bot_console.Services.LoggerService;
 using exmo_trader_bot_console.Services.Mapper;
-using exmo_trader_bot_console.Services.ParserService;
-using exmo_trader_bot_console.Services.ParserService.Exmo;
+using exmo_trader_bot_console.Services.OrdersJson;
 using exmo_trader_bot_console.Services.RequestService;
 using exmo_trader_bot_console.Services.RESTService;
 using exmo_trader_bot_console.Services.SettingsService;
+using exmo_trader_bot_console.Services.TradesJson;
 using exmo_trader_bot_console.Services.WalletService;
-using exmo_trader_bot_console.Services.WebSocket;
-using exmo_trader_bot_console.Services.WebSocketService;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -51,22 +49,18 @@ namespace exmo_trader_bot_console
 
             services.AddSingleton<ISettingsService<Settings>, MainSettingsService>()
                 .AddSingleton<ISettingsService<CandleSignalsSettings>, CandleSettingsService>()
-                .AddSingleton<ITradesParserService, ExmoTradesParserService>()
+                .AddSingleton(mapper)
+                .AddSingleton<IMapperService, MapperService>()
+                .AddSingleton<IEventRouterService, EventRouterService>()
                 .AddSingleton<IDataStorageService<Trade>, TradesDataStorageService>()
                 .AddSingleton<IDecisionService, CandleSignalsDecisionService>()
                 .AddSingleton<IOrderRequestService, ExmoOrderRequestService>()
                 .AddSingleton<IRestService, ExmoRestService>()
-                .AddSingleton<IOrderResponseParserService, ExmoOrderResponseParserService>()
-                .AddSingleton<IOrderResultParserService, ExmoOrderResultParserService>()
                 .AddSingleton<IWalletService, WalletService>()
                 .AddSingleton<ILoggerService, LoggerService>()
-                .AddSingleton(mapper)
-                .AddScoped<IWebSocketService, WebSocketService>()
-                .AddScoped<IDataWebSocketService, ExmoDataWebSocketService>()
-                .AddScoped<IEventParserService, ExmoEventsParserService>()
-                .AddScoped<IUpdatesEventRouterService, UpdatesEventRouterService>()
-                .AddScoped<IErrorsEventRouterService, ErrorsEventRouterService>()
-                .AddScoped<IErrorParserService, ExmoErrorParserService>();
+                .AddScoped<ICandleHistoryService, CandleHistoryService>()
+                .AddScoped<ITradesJsonService, TradesJsonService>()
+                .AddScoped<IOrdersJsonService, OrdersJsonService>();
         }
     }
 }
