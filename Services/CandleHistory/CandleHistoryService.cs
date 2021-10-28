@@ -7,8 +7,10 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using exmo_trader_bot_console.Models.Candles;
+using exmo_trader_bot_console.Models.Exmo;
 using exmo_trader_bot_console.Models.Settings;
 using exmo_trader_bot_console.Models.TradingData;
+using exmo_trader_bot_console.Services.Mapper;
 using exmo_trader_bot_console.Services.Settings;
 using exmo_trader_bot_console.Utils;
 using RestSharp;
@@ -18,13 +20,14 @@ namespace exmo_trader_bot_console.Services.CandleHistory
     class CandleHistoryService : ICandleHistoryService
     {
         private readonly Models.Settings.Settings _settings;
-        private readonly ISubject<CandlesSet> _candleSubject;
+        private readonly ISubject<ExmoCandleSet> _candleSubject;
 
-        public IObservable<CandlesSet> OutputStream => _candleSubject;
+        public IObservable<ExmoCandleSet> OutputStream => _candleSubject;
 
         public CandleHistoryService(ISettingsService<Models.Settings.Settings> settingsService)
         {
             _settings = settingsService.GetSettings();
+            _candleSubject = new Subject<ExmoCandleSet>();
         }
 
         public void GetCandles()
@@ -44,16 +47,18 @@ namespace exmo_trader_bot_console.Services.CandleHistory
                 foreach (var chart in setting.Chart)
                 {
                     var candleSet = GetCandleSet(setting.Pair, chart.Resolution, chart.Resolution * chart.StartCandles);
-                    _candleSubject.OnNext(candleSet);
+
+                    if(candleSet.Candles != null)
+                        _candleSubject.OnNext(candleSet);
                 }
             }
         }
 
-        private CandlesSet GetCandleSet(TradingPair pair, int resolution, int minutesRange)
+        private ExmoCandleSet GetCandleSet(TradingPair pair, int resolution, int minutesRange)
         {
             var symbol = $"{pair.Crypto}_{pair.Currency}";
-            var from = DateUtils.GetDate(DateTime.Now - TimeSpan.FromMinutes(minutesRange));
-            var to = DateUtils.GetDate(DateTime.Now);
+            var from = DateUtils.GetDate(DateTime.UtcNow - TimeSpan.FromMinutes(minutesRange));
+            var to = DateUtils.GetDate(DateTime.UtcNow);
 
             var url =
                 $"{_settings.Api.CandlesHistoryPublic}?symbol={symbol}&resolution={resolution}&from={from}&to={to}";
@@ -63,7 +68,7 @@ namespace exmo_trader_bot_console.Services.CandleHistory
             var request = new RestRequest(Method.GET);
             IRestResponse response = client.Execute(request);
 
-            var candlesSet = JsonSerializer.Deserialize<CandlesSet>(response.Content, new JsonSerializerOptions {PropertyNamingPolicy = JsonNamingPolicy.CamelCase});
+            var candlesSet = JsonSerializer.Deserialize<ExmoCandleSet>(response.Content, new JsonSerializerOptions {PropertyNamingPolicy = JsonNamingPolicy.CamelCase});
             candlesSet.Resolution = resolution;
             candlesSet.Pair = pair;
 

@@ -9,7 +9,7 @@ using exmo_trader_bot_console.Models.OrderData;
 using exmo_trader_bot_console.Models.Settings;
 using exmo_trader_bot_console.Models.TradingData;
 using exmo_trader_bot_console.Services.DecisionService;
-using exmo_trader_bot_console.Services.SettingsService;
+using exmo_trader_bot_console.Services.Settings;
 using exmo_trader_bot_console.Services.WalletService;
 
 namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.DecisionService
@@ -56,10 +56,10 @@ namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.Decisio
                 return;
             }
 
-            var pairService = new PairDecisionService(pair, _candleSettings, _settings.Data, _walletService);
-            pairService.OutputStream.Subscribe(_decisionsSubject);
-            _pairServices.Add(pair, pairService);
-            _pairServices[pair].StoreTrade(trade);
+            //var pairService = new PairDecisionService(pair, _candleSettings, _settings.Data, _walletService);
+            //pairService.OutputStream.Subscribe(_decisionsSubject);
+            //_pairServices.Add(pair, pairService);
+            //_pairServices[pair].StoreTrade(trade);
         }
     }
 }

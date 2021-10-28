@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using exmo_trader_bot_console.Models.Internal;
-using exmo_trader_bot_console.Services.LoggerService;
+using exmo_trader_bot_console.Services.Logger;
 
 namespace exmo_trader_bot_console.Services.WebSocket
 {

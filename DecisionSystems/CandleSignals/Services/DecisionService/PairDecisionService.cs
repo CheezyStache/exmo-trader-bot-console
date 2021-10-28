@@ -60,16 +60,16 @@ namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.Decisio
         {
             for (int i = 0; i < _candleMinutes.Length; i++)
             {
-                var minutes = _candleMinutes[i] == 0 ? settings.CandleMinutes : _candleMinutes[i];
-                var patterns = candleSettings.Patterns.Where(p => p.CandleMinutes == minutes);
+                //var minutes = _candleMinutes[i] == 0 ? settings.CandleMinutes : _candleMinutes[i];
+                //var patterns = candleSettings.Patterns.Where(p => p.CandleMinutes == minutes);
 
-                var patternCheckService = new PatternCheckService(candleSettings, patterns, pair, walletService);
-                _patternCheckServices[i] = patternCheckService;
-                _patternCheckServices[i].OutputStream.Subscribe(_allDecisionSubject.OnNext, _decisionSubject.OnError);
+                //var patternCheckService = new PatternCheckService(candleSettings, patterns, pair, walletService);
+                //_patternCheckServices[i] = patternCheckService;
+                //_patternCheckServices[i].OutputStream.Subscribe(_allDecisionSubject.OnNext, _decisionSubject.OnError);
 
-                var candleStorageService = new CandleStorageService.CandleStorageService(settings.CandleCount, minutes);
-                _candleStorageServices.Add(minutes, candleStorageService);
-                _patternCheckServices[i].Subscribe(candleStorageService.OutputStream);
+                //var candleStorageService = new CandleStorageService.CandleStorageService(settings.CandleCount, minutes);
+                //_candleStorageServices.Add(minutes, candleStorageService);
+                //_patternCheckServices[i].Subscribe(candleStorageService.OutputStream);
             }
         }
     }

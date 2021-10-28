@@ -21,6 +21,7 @@ namespace exmo_trader_bot_console.Services.Mapper
                 new TradeConfig(cfg);
                 new ResponseWithEventConfig(cfg);
                 new OrderResultConfig(cfg);
+                new CandleConfig(cfg);
             });
         }
 

@@ -17,8 +17,7 @@ namespace exmo_trader_bot_console.Services.Mapper.Configurations
         public TradeConfig(IMapperConfigurationExpression cfg)
         {
             cfg.CreateMap<ExmoSocketResponse<ExmoTrades[]>, IEnumerable<Trade>>()
-                .ForMember(dest => dest,
-                    opt => opt.MapFrom(src => src.data.Select(d => GetByExmoTrade(d, src.topic))));
+                .ConstructUsing(src => src.data.Select(d => GetByExmoTrade(d, src.topic)));
         }
 
         private Trade GetByExmoTrade(ExmoTrades exmoTrade, string topic)

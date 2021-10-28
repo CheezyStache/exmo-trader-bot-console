@@ -16,8 +16,8 @@ namespace exmo_trader_bot_console.Utils
 
         public static long GetDate(DateTime date)
         {
-            var timespan = date - new DateTime(1970, 01, 01);
-            return timespan.Milliseconds / 1000;
+            var timespan = new TimeSpan(date.Ticks - new DateTime(1970, 01, 01).Ticks);
+            return (long)timespan.TotalMilliseconds / 1000;
         }
     }
 }

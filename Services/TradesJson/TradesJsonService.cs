@@ -5,8 +5,8 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using exmo_trader_bot_console.Models.Settings;
-using exmo_trader_bot_console.Services.LoggerService;
-using exmo_trader_bot_console.Services.SettingsService;
+using exmo_trader_bot_console.Services.Logger;
+using exmo_trader_bot_console.Services.Settings;
 using exmo_trader_bot_console.Services.WebSocket;
 
 namespace exmo_trader_bot_console.Services.TradesJson
@@ -15,9 +15,9 @@ namespace exmo_trader_bot_console.Services.TradesJson
     {
         public IObservable<string> OutputStream { get; }
 
-        private readonly Settings _settings;
+        private readonly Models.Settings.Settings _settings;
 
-        public TradesJsonService(ISettingsService<Settings> settings, ILoggerService loggerService): base(loggerService)
+        public TradesJsonService(ISettingsService<Models.Settings.Settings> settings, ILoggerService loggerService): base(loggerService)
         {
             _settings = settings.GetSettings();
 
@@ -37,7 +37,7 @@ namespace exmo_trader_bot_console.Services.TradesJson
         {
             await Connect(_settings.Api.ConnectionUrlPublic);
 
-            var tradingPairs = _settings.Pairs.Select(p => p.TradingPair)
+            var tradingPairs = _settings.Data.Select(p => p.Pair)
                 .Select(p => $"\"spot/trades:{p.Crypto}_{p.Currency}\"")
                 .ToArray();
 

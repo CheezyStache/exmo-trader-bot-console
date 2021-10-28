@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using exmo_trader_bot_console.Models.Candles;
+using exmo_trader_bot_console.Models.Exmo;
 using exmo_trader_bot_console.Models.Settings;
 
 namespace exmo_trader_bot_console.Services.CandleHistory
 {
-    interface ICandleHistoryService: IOutputService<CandlesSet>
+    interface ICandleHistoryService: IOutputService<ExmoCandleSet>
     {
         void GetCandles();
         void GetCandles(IEnumerable<DataSettings> settings);

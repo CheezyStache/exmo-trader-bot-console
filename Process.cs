@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Reactive.Linq;
-using exmo_trader_bot_console.Models.PlatformAPI;
+using exmo_trader_bot_console.Models.Candles;
+using exmo_trader_bot_console.Models.Exmo;
+using exmo_trader_bot_console.Models.Internal;
 using exmo_trader_bot_console.Models.TradingData;
 using exmo_trader_bot_console.Services.CandleHistory;
-using exmo_trader_bot_console.Services.DataStorageService;
-using exmo_trader_bot_console.Services.DecisionService;
-using exmo_trader_bot_console.Services.LoggerService;
-using exmo_trader_bot_console.Services.RequestService;
-using exmo_trader_bot_console.Services.RESTService;
-using exmo_trader_bot_console.Services.TradesJson;
-using exmo_trader_bot_console.Services.WalletService;
+using exmo_trader_bot_console.Services.DataStorage;
+using exmo_trader_bot_console.Services.Logger;
+using exmo_trader_bot_console.Services.Mapper;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace exmo_trader_bot_console
@@ -22,75 +20,52 @@ namespace exmo_trader_bot_console
             IServiceProvider provider = serviceScope.ServiceProvider;
 
             var candleHistoryService = provider.GetRequiredService<ICandleHistoryService>();
-            var tradeJsonService = provider.GetRequiredService<ITradesJsonService>();
-
-
-            var dataWebSocketService = provider.GetRequiredService<IDataWebSocketService>();
-            var eventParserService = provider.GetRequiredService<IEventParserService>();
-            var updatesEventRouterService = provider.GetRequiredService<IUpdatesEventRouterService>();
-            var tradesParserService = provider.GetRequiredService<ITradesParserService>();
-            var tradesDataStorageService = provider.GetRequiredService<IDataStorageService<Trade>>();
-            var decisionService = provider.GetRequiredService<IDecisionService>();
-            var orderRequestService = provider.GetRequiredService<IOrderRequestService>();
-            var restService = provider.GetRequiredService<IRestService>();
-            var orderResponseParserService = provider.GetRequiredService<IOrderResponseParserService>();
+            //var tradeJsonService = provider.GetRequiredService<ITradesJsonService>();
+            var mapperService = provider.GetRequiredService<IMapperService>();
+            var dataStorageService = provider.GetRequiredService<IDataStorageService>();
             var loggerService = provider.GetRequiredService<ILoggerService>();
 
-            var errorsEventRouterService = provider.GetRequiredService<IErrorsEventRouterService>();
-            var errorParserService = provider.GetRequiredService<IErrorParserService>();
+            var candleStream = mapperService.Map<ExmoCandleSet, CandlesSet>(candleHistoryService.OutputStream);
+            dataStorageService.Subscribe(candleStream);
 
-            eventParserService.Subscribe(dataWebSocketService.OutputStream);
-            updatesEventRouterService.Subscribe(eventParserService.OutputStream);
-            tradesParserService.Subscribe(updatesEventRouterService.OutputStream);
-            tradesDataStorageService.Subscribe(tradesParserService.OutputStream);
-            decisionService.Subscribe(tradesDataStorageService.OutputStream);
-            decisionService.SubscribeToResultStream(orderResponseParserService.OutputStream);
-            orderRequestService.Subscribe(decisionService.OutputStream);
-            restService.Subscribe(orderRequestService.OutputStream);
-            orderResponseParserService.Subscribe(restService.OutputStream);
+            dataStorageService.GetCandles(new TradingPair {Crypto = "XRP", Currency = "USD"}, 1).Subscribe(candles =>
+            {
+                foreach (var candle in candles)
+                {
+                    loggerService.OnInfo($"{candle.Open} -> {candle.Close}", LoggerEvent.Info);
+                }
+            });
 
-            decisionService.OutputStream.Zip(orderResponseParserService.OutputStream)
-                .Subscribe(observer =>
-                    {
-                        loggerService.OnDecision(observer.First);
-                        loggerService.OnOrderResult(observer.Second);
-                    },
-                    loggerService.OnException);
-
-            errorsEventRouterService.Subscribe(eventParserService.OutputStream);
-            errorParserService.Subscribe(errorsEventRouterService.OutputStream);
-            errorParserService.OutputStream.Subscribe(loggerService.OnError, loggerService.OnException);
-
-            dataWebSocketService.ConnectToApi(APIType.Trades);
+            candleHistoryService.GetCandles();
         }
 
         public static void StartOrdersProcess(IServiceProvider services)
         {
-            using IServiceScope serviceScope = services.CreateScope();
-            IServiceProvider provider = serviceScope.ServiceProvider;
+            //using IServiceScope serviceScope = services.CreateScope();
+            //IServiceProvider provider = serviceScope.ServiceProvider;
 
-            var dataWebSocketService = provider.GetRequiredService<IDataWebSocketService>();
-            var eventParserService = provider.GetRequiredService<IEventParserService>();
-            var updatesEventRouterService = provider.GetRequiredService<IUpdatesEventRouterService>();
-            var orderResultParserService = provider.GetRequiredService<IOrderResultParserService>();
-            var walletService = provider.GetRequiredService<IWalletService>();
-            var loggerService = provider.GetRequiredService<ILoggerService>();
+            //var dataWebSocketService = provider.GetRequiredService<IDataWebSocketService>();
+            //var eventParserService = provider.GetRequiredService<IEventParserService>();
+            //var updatesEventRouterService = provider.GetRequiredService<IUpdatesEventRouterService>();
+            //var orderResultParserService = provider.GetRequiredService<IOrderResultParserService>();
+            //var walletService = provider.GetRequiredService<IWalletService>();
+            //var loggerService = provider.GetRequiredService<ILoggerService>();
 
-            var errorsEventRouterService = provider.GetRequiredService<IErrorsEventRouterService>();
-            var errorParserService = provider.GetRequiredService<IErrorParserService>();
+            //var errorsEventRouterService = provider.GetRequiredService<IErrorsEventRouterService>();
+            //var errorParserService = provider.GetRequiredService<IErrorParserService>();
 
-            eventParserService.Subscribe(dataWebSocketService.OutputStream);
-            updatesEventRouterService.Subscribe(eventParserService.OutputStream);
-            orderResultParserService.Subscribe(updatesEventRouterService.OutputStream);
-            walletService.Subscribe(orderResultParserService.OutputStream);
+            //eventParserService.Subscribe(dataWebSocketService.OutputStream);
+            //updatesEventRouterService.Subscribe(eventParserService.OutputStream);
+            //orderResultParserService.Subscribe(updatesEventRouterService.OutputStream);
+            //walletService.Subscribe(orderResultParserService.OutputStream);
 
-            walletService.OutputStream.Subscribe(loggerService.OnWalletChange, loggerService.OnException);
+            //walletService.OutputStream.Subscribe(loggerService.OnWalletChange, loggerService.OnException);
 
-            errorsEventRouterService.Subscribe(eventParserService.OutputStream);
-            errorParserService.Subscribe(errorsEventRouterService.OutputStream);
-            errorParserService.OutputStream.Subscribe(loggerService.OnError, loggerService.OnException);
+            //errorsEventRouterService.Subscribe(eventParserService.OutputStream);
+            //errorParserService.Subscribe(errorsEventRouterService.OutputStream);
+            //errorParserService.OutputStream.Subscribe(loggerService.OnError, loggerService.OnException);
 
-            dataWebSocketService.ConnectToApi(APIType.Orders);
+            //dataWebSocketService.ConnectToApi(APIType.Orders);
         }
     }
 }

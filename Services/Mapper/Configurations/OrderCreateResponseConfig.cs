@@ -12,9 +12,7 @@ namespace exmo_trader_bot_console.Services.Mapper.Configurations
     {
         public OrderCreateResponseConfig(IMapperConfigurationExpression cfg)
         {
-            cfg.CreateMap<ExmoOrderCreateResponse, bool>()
-                .ForMember(dest => dest,
-                    opt => opt.MapFrom(src => src.Result));
+            cfg.CreateMap<ExmoOrderCreateResponse, bool>().ConvertUsing(src => src.Result);
         }
     }
 }

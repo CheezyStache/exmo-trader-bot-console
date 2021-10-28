@@ -6,15 +6,15 @@ using exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.SettingsSer
 using exmo_trader_bot_console.Models.Settings;
 using exmo_trader_bot_console.Models.TradingData;
 using exmo_trader_bot_console.Services.CandleHistory;
-using exmo_trader_bot_console.Services.DataStorageService;
+using exmo_trader_bot_console.Services.DataStorage;
 using exmo_trader_bot_console.Services.DecisionService;
 using exmo_trader_bot_console.Services.EventRouter;
-using exmo_trader_bot_console.Services.LoggerService;
+using exmo_trader_bot_console.Services.Logger;
 using exmo_trader_bot_console.Services.Mapper;
 using exmo_trader_bot_console.Services.OrdersJson;
 using exmo_trader_bot_console.Services.RequestService;
 using exmo_trader_bot_console.Services.RESTService;
-using exmo_trader_bot_console.Services.SettingsService;
+using exmo_trader_bot_console.Services.Settings;
 using exmo_trader_bot_console.Services.TradesJson;
 using exmo_trader_bot_console.Services.WalletService;
 using Microsoft.Extensions.DependencyInjection;
@@ -48,11 +48,10 @@ namespace exmo_trader_bot_console
             var mapper = mapperConfiguration.CreateMapper();
 
             services.AddSingleton<ISettingsService<Settings>, MainSettingsService>()
-                .AddSingleton<ISettingsService<CandleSignalsSettings>, CandleSettingsService>()
                 .AddSingleton(mapper)
                 .AddSingleton<IMapperService, MapperService>()
                 .AddSingleton<IEventRouterService, EventRouterService>()
-                .AddSingleton<IDataStorageService<Trade>, TradesDataStorageService>()
+                .AddSingleton<IDataStorageService, DataStorageService>()
                 .AddSingleton<IDecisionService, CandleSignalsDecisionService>()
                 .AddSingleton<IOrderRequestService, ExmoOrderRequestService>()
                 .AddSingleton<IRestService, ExmoRestService>()

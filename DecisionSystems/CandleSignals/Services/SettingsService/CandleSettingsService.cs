@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using exmo_trader_bot_console.DecisionSystems.CandleSignals.Models;
-using exmo_trader_bot_console.Services.SettingsService;
+using exmo_trader_bot_console.Services.Settings;
 
 namespace exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.SettingsService
 {

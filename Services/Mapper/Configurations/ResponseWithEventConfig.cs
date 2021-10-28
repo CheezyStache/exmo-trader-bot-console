@@ -14,9 +14,7 @@ namespace exmo_trader_bot_console.Services.Mapper.Configurations
     {
         public ResponseWithEventConfig(IMapperConfigurationExpression cfg)
         {
-            cfg.CreateMap<string, ResponseWithEvent>()
-                .ForMember(dest => dest,
-                    opt => opt.MapFrom(src => ConvertToResponseWithEvent(src)));
+            cfg.CreateMap<string, ResponseWithEvent>().ConstructUsing(src => ConvertToResponseWithEvent(src));
         }
 
         private ResponseWithEvent ConvertToResponseWithEvent(string response)

@@ -5,8 +5,8 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using exmo_trader_bot_console.Models.Settings;
-using exmo_trader_bot_console.Services.LoggerService;
-using exmo_trader_bot_console.Services.SettingsService;
+using exmo_trader_bot_console.Services.Logger;
+using exmo_trader_bot_console.Services.Settings;
 using exmo_trader_bot_console.Services.WebSocket;
 
 namespace exmo_trader_bot_console.Services.OrdersJson
@@ -15,9 +15,9 @@ namespace exmo_trader_bot_console.Services.OrdersJson
     {
         public IObservable<string> OutputStream { get; }
 
-        private readonly Settings _settings;
+        private readonly Models.Settings.Settings _settings;
 
-        public OrdersJsonService(ISettingsService<Settings> settings, ILoggerService loggerService) : base(loggerService)
+        public OrdersJsonService(ISettingsService<Models.Settings.Settings> settings, ILoggerService loggerService) : base(loggerService)
         {
             _settings = settings.GetSettings();
 

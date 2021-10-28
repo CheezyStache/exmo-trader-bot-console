@@ -8,7 +8,7 @@ using exmo_trader_bot_console.Models.OrderData;
 using exmo_trader_bot_console.Models.Settings;
 using exmo_trader_bot_console.Models.TradingData;
 using exmo_trader_bot_console.Models.Wallet;
-using exmo_trader_bot_console.Services.SettingsService;
+using exmo_trader_bot_console.Services.Settings;
 
 namespace exmo_trader_bot_console.Services.WalletService
 {
@@ -19,16 +19,16 @@ namespace exmo_trader_bot_console.Services.WalletService
 
         private readonly ISubject<WalletChange> _walletChangeSubject;
 
-        public WalletService(ISettingsService<Settings> settingsService)
+        public WalletService(ISettingsService<Models.Settings.Settings> settingsService)
         {
             _walletChangeSubject = new Subject<WalletChange>();
             Wallet = new Dictionary<TradingPair, PairWallet>();
 
-            var pairSettings = settingsService.GetSettings().Pairs;
+            var pairSettings = settingsService.GetSettings().Data;
             foreach (var pair in pairSettings)
             {
                 var pairWallet = new PairWallet(0, pair.CurrencyAmount);
-                Wallet.Add(pair.TradingPair, pairWallet);
+                Wallet.Add(pair.Pair, pairWallet);
             }
         }
 
