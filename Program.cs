@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using exmo_trader_bot_console.DecisionSystems.CandleSignals.Models;
-using exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.DecisionService;
-using exmo_trader_bot_console.DecisionSystems.CandleSignals.Services.SettingsService;
 using exmo_trader_bot_console.Models.Settings;
-using exmo_trader_bot_console.Models.TradingData;
 using exmo_trader_bot_console.Services.CandleHistory;
 using exmo_trader_bot_console.Services.DataStorage;
-using exmo_trader_bot_console.Services.DecisionService;
+using exmo_trader_bot_console.Services.Decision;
 using exmo_trader_bot_console.Services.EventRouter;
 using exmo_trader_bot_console.Services.Logger;
 using exmo_trader_bot_console.Services.Mapper;
@@ -47,12 +43,11 @@ namespace exmo_trader_bot_console
             var mapperConfiguration = new MapperConfigurationService();
             var mapper = mapperConfiguration.CreateMapper();
 
-            services.AddSingleton<ISettingsService<Settings>, MainSettingsService>()
+            services.AddSingleton<ISettingsService<SettingsModel>, MainSettingsService>()
                 .AddSingleton(mapper)
                 .AddSingleton<IMapperService, MapperService>()
                 .AddSingleton<IEventRouterService, EventRouterService>()
                 .AddSingleton<IDataStorageService, DataStorageService>()
-                .AddSingleton<IDecisionService, CandleSignalsDecisionService>()
                 .AddSingleton<IOrderRequestService, ExmoOrderRequestService>()
                 .AddSingleton<IRestService, ExmoRestService>()
                 .AddSingleton<IWalletService, WalletService>()

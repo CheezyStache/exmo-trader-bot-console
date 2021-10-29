@@ -15,9 +15,9 @@ namespace exmo_trader_bot_console.Services.OrdersJson
     {
         public IObservable<string> OutputStream { get; }
 
-        private readonly Models.Settings.Settings _settings;
+        private readonly Models.Settings.SettingsModel _settings;
 
-        public OrdersJsonService(ISettingsService<Models.Settings.Settings> settings, ILoggerService loggerService) : base(loggerService)
+        public OrdersJsonService(ISettingsService<Models.Settings.SettingsModel> settings, ILoggerService loggerService) : base(loggerService)
         {
             _settings = settings.GetSettings();
 

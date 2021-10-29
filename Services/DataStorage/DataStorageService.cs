@@ -14,9 +14,9 @@ namespace exmo_trader_bot_console.Services.DataStorage
     public class DataStorageService: IDataStorageService
     {
         private readonly IDictionary<TradingPair, IDictionary<int, IObservable<Candle[]>>> _candleDictionary;
-        private readonly Models.Settings.Settings _settings;
+        private readonly SettingsModel _settings;
 
-        public DataStorageService(ISettingsService<Models.Settings.Settings> settingsService)
+        public DataStorageService(ISettingsService<SettingsModel> settingsService)
         {
             _candleDictionary = new Dictionary<TradingPair, IDictionary<int, IObservable<Candle[]>>>();
             _settings = settingsService.GetSettings();

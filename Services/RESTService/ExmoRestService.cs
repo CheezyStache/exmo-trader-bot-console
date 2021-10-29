@@ -11,9 +11,9 @@ namespace exmo_trader_bot_console.Services.RESTService
 {
     class ExmoRestService: RestService
     {
-        private Models.Settings.Settings _settings;
+        private Models.Settings.SettingsModel _settings;
 
-        public ExmoRestService(ISettingsService<Models.Settings.Settings> settingsService) : base(
+        public ExmoRestService(ISettingsService<Models.Settings.SettingsModel> settingsService) : base(
             settingsService.GetSettings().Api.OrderCreatePrivate, Method.POST)
         {
             _settings = settingsService.GetSettings();

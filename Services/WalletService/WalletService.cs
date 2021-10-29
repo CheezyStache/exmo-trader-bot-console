@@ -19,7 +19,7 @@ namespace exmo_trader_bot_console.Services.WalletService
 
         private readonly ISubject<WalletChange> _walletChangeSubject;
 
-        public WalletService(ISettingsService<Models.Settings.Settings> settingsService)
+        public WalletService(ISettingsService<Models.Settings.SettingsModel> settingsService)
         {
             _walletChangeSubject = new Subject<WalletChange>();
             Wallet = new Dictionary<TradingPair, PairWallet>();

@@ -6,8 +6,10 @@ using exmo_trader_bot_console.Models.Internal;
 using exmo_trader_bot_console.Models.TradingData;
 using exmo_trader_bot_console.Services.CandleHistory;
 using exmo_trader_bot_console.Services.DataStorage;
+using exmo_trader_bot_console.Services.EventRouter;
 using exmo_trader_bot_console.Services.Logger;
 using exmo_trader_bot_console.Services.Mapper;
+using exmo_trader_bot_console.Services.TradesJson;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace exmo_trader_bot_console
@@ -19,15 +21,30 @@ namespace exmo_trader_bot_console
             using IServiceScope serviceScope = services.CreateScope();
             IServiceProvider provider = serviceScope.ServiceProvider;
 
+            // -----------------------------------
+            // Candles to storage
+            // -----------------------------------
+
             var candleHistoryService = provider.GetRequiredService<ICandleHistoryService>();
-            //var tradeJsonService = provider.GetRequiredService<ITradesJsonService>();
             var mapperService = provider.GetRequiredService<IMapperService>();
             var dataStorageService = provider.GetRequiredService<IDataStorageService>();
-            var loggerService = provider.GetRequiredService<ILoggerService>();
-
             var candleStream = mapperService.Map<ExmoCandleSet, CandlesSet>(candleHistoryService.OutputStream);
             dataStorageService.Subscribe(candleStream);
 
+            // -----------------------------------
+            // Trades json to object stream
+            // -----------------------------------
+
+            var tradesJsonService = provider.GetRequiredService<ITradesJsonService>();
+            var eventRouterService = provider.GetRequiredService<IEventRouterService>();
+            var tradesResponseStream = mapperService.Deserialize<ResponseWithEvent>(tradesJsonService.OutputStream);
+            eventRouterService.Subscribe(tradesResponseStream, "Trades");
+            var tradesJsonSuccessStream = eventRouterService.GetRouterStream("Trades", ResponseEvent.Update);
+            var tradesStream = mapperService.Deserialize<Trade[]>(tradesJsonSuccessStream);
+
+            // ----------------------------------
+
+            var loggerService = provider.GetRequiredService<ILoggerService>();
             dataStorageService.GetCandles(new TradingPair {Crypto = "XRP", Currency = "USD"}, 1).Subscribe(candles =>
             {
                 foreach (var candle in candles)
@@ -36,7 +53,7 @@ namespace exmo_trader_bot_console
                 }
             });
 
-            candleHistoryService.GetCandles();
+            Observable.Timer(TimeSpan.FromMinutes(1)).Subscribe(time => candleHistoryService.GetCandles());
         }
 
         public static void StartOrdersProcess(IServiceProvider services)

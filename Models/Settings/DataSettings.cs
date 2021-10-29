@@ -11,6 +11,7 @@ namespace exmo_trader_bot_console.Models.Settings
     {
         public TradingPair Pair { get; set; }
         public double CurrencyAmount { get; set; }
+        public double MinDiff { get; set; }
 
         public ChartSettings[] Chart { get; set; }
     }

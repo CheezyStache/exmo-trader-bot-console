@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using exmo_trader_bot_console.Models.OrderData;
 using exmo_trader_bot_console.Models.TradingData;
 
-namespace exmo_trader_bot_console.Services.DecisionService
+namespace exmo_trader_bot_console.Services.Decision
 {
-    interface IDecisionService: IStreamService<Trade, OrderDecision>
+    interface IDecisionService: IOutputService<OrderDecision>
     {
-        void SubscribeToResultStream(IObservable<bool> resultStream);
+        void Start(IObservable<Trade[]> tradesStream);
     }
 }
