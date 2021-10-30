@@ -17,7 +17,6 @@ namespace exmo_trader_bot_console.Services.Mapper
             _config = new MapperConfiguration(cfg =>
             {
                 new ErrorResponseConfig(cfg);
-                new OrderCreateResponseConfig(cfg);
                 new TradeConfig(cfg);
                 new ResponseWithEventConfig(cfg);
                 new OrderResultConfig(cfg);

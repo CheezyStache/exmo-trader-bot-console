@@ -16,7 +16,7 @@ namespace exmo_trader_bot_console.Services.CandleHistory
 {
     class CandleHistoryService : ICandleHistoryService
     {
-        private readonly Models.Settings.SettingsModel _settings;
+        private readonly SettingsModel _settings;
         private readonly ISubject<ExmoCandleSet> _candleSubject;
         private readonly DateTime _botStart;
 

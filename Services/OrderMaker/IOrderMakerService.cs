@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using exmo_trader_bot_console.Models.OrderData;
 
-namespace exmo_trader_bot_console.Services.RequestService
+namespace exmo_trader_bot_console.Services.OrderMaker
 {
-    interface IOrderRequestService: IRequestService<OrderDecision>
+    interface IOrderMakerService: IStreamService<OrderDecision, bool>
     {
     }
 }

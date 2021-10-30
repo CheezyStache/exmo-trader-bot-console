@@ -21,20 +21,23 @@ namespace exmo_trader_bot_console.Services.Decision
         private readonly IDataStorageService _dataStorageService;
         private readonly SettingsModel _settings;
         private readonly ISubject<OrderDecision> _orderDecisionSubject;
+        private readonly ISubject<bool> _throttleSubject;
         private readonly IList<PairDecisionService> _pairDecisionServices;
 
-        public DecisionService(IDataStorageService dataStorageService, ISettingsService<SettingsModel> settingsService,
-            IObservable<bool> decisionSentStream)
+        private IDisposable _decisionSentSubscription;
+
+        public DecisionService(IDataStorageService dataStorageService, ISettingsService<SettingsModel> settingsService)
         {
             _dataStorageService = dataStorageService;
             _settings = settingsService.GetSettings();
             _orderDecisionSubject = new Subject<OrderDecision>();
+            _throttleSubject = new Subject<bool>();
             _pairDecisionServices = new List<PairDecisionService>();
 
-            OutputStream = _orderDecisionSubject.Throttle(decision => decisionSentStream);
+            OutputStream = _orderDecisionSubject.Throttle(_ => _throttleSubject);
         }
 
-        public void Start(IObservable<Trade[]> tradesStream)
+        public void Start(IObservable<Trade[]> tradesStream, IObservable<bool> decisionSentStream)
         {
             foreach (var pairDecisionService in _pairDecisionServices)
             {
@@ -42,6 +45,9 @@ namespace exmo_trader_bot_console.Services.Decision
             }
 
             _pairDecisionServices.Clear();
+
+            _decisionSentSubscription?.Dispose();
+            _decisionSentSubscription = decisionSentStream.Subscribe(_throttleSubject);
 
             foreach (var dataSettings in _settings.Data)
             {

@@ -7,12 +7,12 @@ using exmo_trader_bot_console.Services.Decision;
 using exmo_trader_bot_console.Services.EventRouter;
 using exmo_trader_bot_console.Services.Logger;
 using exmo_trader_bot_console.Services.Mapper;
+using exmo_trader_bot_console.Services.OrderMaker;
 using exmo_trader_bot_console.Services.OrdersJson;
-using exmo_trader_bot_console.Services.RequestService;
 using exmo_trader_bot_console.Services.RESTService;
 using exmo_trader_bot_console.Services.Settings;
 using exmo_trader_bot_console.Services.TradesJson;
-using exmo_trader_bot_console.Services.WalletService;
+using exmo_trader_bot_console.Services.Wallet;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -47,14 +47,15 @@ namespace exmo_trader_bot_console
                 .AddSingleton(mapper)
                 .AddSingleton<IMapperService, MapperService>()
                 .AddSingleton<IEventRouterService, EventRouterService>()
-                .AddSingleton<IDataStorageService, DataStorageService>()
-                .AddSingleton<IOrderRequestService, ExmoOrderRequestService>()
+                .AddSingleton<IOrderMakerService, OrderMakerService>()
                 .AddSingleton<IRestService, ExmoRestService>()
                 .AddSingleton<IWalletService, WalletService>()
                 .AddSingleton<ILoggerService, LoggerService>()
+                .AddSingleton<IDecisionService, DecisionService>()
                 .AddScoped<ICandleHistoryService, CandleHistoryService>()
                 .AddScoped<ITradesJsonService, TradesJsonService>()
-                .AddScoped<IOrdersJsonService, OrdersJsonService>();
+                .AddScoped<IOrdersJsonService, OrdersJsonService>()
+                .AddScoped<IDataStorageService, DataStorageService>();
         }
     }
 }

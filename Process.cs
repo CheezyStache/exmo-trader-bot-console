@@ -6,10 +6,13 @@ using exmo_trader_bot_console.Models.Internal;
 using exmo_trader_bot_console.Models.TradingData;
 using exmo_trader_bot_console.Services.CandleHistory;
 using exmo_trader_bot_console.Services.DataStorage;
+using exmo_trader_bot_console.Services.Decision;
 using exmo_trader_bot_console.Services.EventRouter;
 using exmo_trader_bot_console.Services.Logger;
 using exmo_trader_bot_console.Services.Mapper;
+using exmo_trader_bot_console.Services.OrderMaker;
 using exmo_trader_bot_console.Services.TradesJson;
+using exmo_trader_bot_console.Services.Wallet;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace exmo_trader_bot_console
@@ -41,6 +44,17 @@ namespace exmo_trader_bot_console
             eventRouterService.Subscribe(tradesResponseStream, "Trades");
             var tradesJsonSuccessStream = eventRouterService.GetRouterStream("Trades", ResponseEvent.Update);
             var tradesStream = mapperService.Deserialize<Trade[]>(tradesJsonSuccessStream);
+
+            // ----------------------------------
+            // Decision and wallet streams
+            // ----------------------------------
+
+            var walletService = provider.GetRequiredService<IWalletService>();
+            var decisionService = provider.GetRequiredService<IDecisionService>();
+            decisionService.Start(tradesStream, walletService.WalletOperationStream);
+            var orderMakerService = provider.GetRequiredService<IOrderMakerService>();
+            orderMakerService.Subscribe(decisionService.OutputStream);
+            var orderResultStream = orderMakerService.OutputStream;
 
             // ----------------------------------
 

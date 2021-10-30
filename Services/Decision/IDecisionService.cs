@@ -10,6 +10,6 @@ namespace exmo_trader_bot_console.Services.Decision
 {
     interface IDecisionService: IOutputService<OrderDecision>
     {
-        void Start(IObservable<Trade[]> tradesStream);
+        void Start(IObservable<Trade[]> tradesStream, IObservable<bool> decisionSentStream);
     }
 }

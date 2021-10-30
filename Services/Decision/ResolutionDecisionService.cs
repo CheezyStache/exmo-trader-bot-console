@@ -56,8 +56,8 @@ namespace exmo_trader_bot_console.Services.Decision
                 if (flowLineDiff < _dataSettings.MinDiff) return null;
 
                 var position = _flowCalcService.GetPricePosition(flowLine, lastTrade.Price, currentPos);
-                if (position == FlowLinePos.Higher) return CreateDecisionObject(TradeType.MarketSellPrice);
-                if (position == FlowLinePos.Lower) return CreateDecisionObject(TradeType.MarketBuyQuantity);
+                if (position == FlowLinePos.Higher) return CreateDecisionObject(TradeType.Sell);
+                if (position == FlowLinePos.Lower) return CreateDecisionObject(TradeType.Buy);
 
                 return null;
 
