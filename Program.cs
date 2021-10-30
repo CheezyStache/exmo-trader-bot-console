@@ -8,6 +8,7 @@ using exmo_trader_bot_console.Services.EventRouter;
 using exmo_trader_bot_console.Services.Logger;
 using exmo_trader_bot_console.Services.Mapper;
 using exmo_trader_bot_console.Services.OrderMaker;
+using exmo_trader_bot_console.Services.OrderResult;
 using exmo_trader_bot_console.Services.OrdersJson;
 using exmo_trader_bot_console.Services.RESTService;
 using exmo_trader_bot_console.Services.Settings;
@@ -48,14 +49,14 @@ namespace exmo_trader_bot_console
                 .AddSingleton<IMapperService, MapperService>()
                 .AddSingleton<IEventRouterService, EventRouterService>()
                 .AddSingleton<IOrderMakerService, OrderMakerService>()
-                .AddSingleton<IRestService, ExmoRestService>()
                 .AddSingleton<IWalletService, WalletService>()
                 .AddSingleton<ILoggerService, LoggerService>()
                 .AddSingleton<IDecisionService, DecisionService>()
                 .AddScoped<ICandleHistoryService, CandleHistoryService>()
                 .AddScoped<ITradesJsonService, TradesJsonService>()
                 .AddScoped<IOrdersJsonService, OrdersJsonService>()
-                .AddScoped<IDataStorageService, DataStorageService>();
+                .AddScoped<IDataStorageService, DataStorageService>()
+                .AddScoped<IOrderResultService, OrderResultService>();
         }
     }
 }

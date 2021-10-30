@@ -16,7 +16,7 @@ namespace exmo_trader_bot_console.Services.Mapper.Configurations
     {
         public OrderResultConfig(IMapperConfigurationExpression cfg)
         {
-            cfg.CreateMap<ExmoSocketResponse<ExmoUserTrades>, OrderResult>()
+            cfg.CreateMap<ExmoSocketResponse<ExmoUserTrades>, Models.OrderData.OrderResult>()
                 .ForMember(dest => dest.Amount,
                     opt => opt.MapFrom(src => NumberUtils.ParseDouble(src.data.amount)))
                 .ForMember(dest => dest.CommissionAmount,
@@ -46,13 +46,13 @@ namespace exmo_trader_bot_console.Services.Mapper.Configurations
                 case "sell":
                     return TradeType.Sell;
                 case "market_buy":
-                    return TradeType.MarketBuyPrice;
+                    return TradeType.Buy;
                 case "market_sell":
-                    return TradeType.MarketSellPrice;
+                    return TradeType.Sell;
                 case "market_buy_total":
-                    return TradeType.MarketBuyQuantity;
+                    return TradeType.Buy;
                 case "market_sell_total":
-                    return TradeType.MarketSellQuantity;
+                    return TradeType.Sell;
 
                 default:
                     throw new NotImplementedException();
