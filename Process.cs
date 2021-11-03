@@ -56,14 +56,33 @@ namespace exmo_trader_bot_console
 
             var walletService = provider.GetRequiredService<IWalletService>();
             var decisionService = provider.GetRequiredService<IDecisionService>();
-            decisionService.Start(tradesStream, walletService.WalletOperationStream);
             var orderMakerService = provider.GetRequiredService<IOrderMakerService>();
-            orderMakerService.Subscribe(decisionService.OutputStream);
+            //For tests
+            //orderMakerService.Subscribe(decisionService.OutputStream);
+            //
             var orderResultStream = orderMakerService.OutputStream;
 
-            // ----------------------------------
+            var decisionThrottleStream =
+                walletService.WalletOperationStream.Merge(orderMakerService.OutputStream.Where(o => !o));
+            //For tests
+            decisionThrottleStream =
+                decisionThrottleStream.Merge(decisionService.OutputStream.Delay(TimeSpan.FromSeconds(2)).Select(_ => true));
+            //
+            decisionService.Start(tradesStream, decisionThrottleStream);
+
+            // -----------------------------------
+            // Logging
+            // -----------------------------------
 
             var loggerService = provider.GetRequiredService<ILoggerService>();
+
+            eventRouterService.GetRouterStream("Trades", ResponseEvent.Error).Subscribe(result =>
+                loggerService.OnError(new ErrorResponse { Message = result }));
+
+            decisionService.OutputStream.Zip(orderResultStream)
+                .Subscribe(result => loggerService.OnDecision(result.First, result.Second));
+
+            // Start
 
             Observable.Timer(TimeSpan.FromMinutes(1)).Subscribe(_ => candleHistoryService.GetCandles());
         }
@@ -91,10 +110,21 @@ namespace exmo_trader_bot_console
             // Wallet change
             // -----------------------------------
 
+            var walletService = provider.GetRequiredService<IWalletService>();
             var orderResultService = provider.GetRequiredService<IOrderResultService>();
             orderResultService.Subscribe(ordersStream);
 
+            // -----------------------------------
+            // Logging
+            // -----------------------------------
+
             var loggerService = provider.GetRequiredService<ILoggerService>();
+
+            eventRouterService.GetRouterStream("Orders", ResponseEvent.Error).Subscribe(result =>
+                loggerService.OnError(new ErrorResponse {Message = result}));
+
+            ordersStream.Zip(walletService.WalletOperationStream)
+                .Subscribe(result => loggerService.OnOrder(result.First));
         }
     }
 }

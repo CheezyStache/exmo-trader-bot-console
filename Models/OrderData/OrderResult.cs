@@ -7,7 +7,7 @@ using exmo_trader_bot_console.Models.TradingData;
 
 namespace exmo_trader_bot_console.Models.OrderData
 {
-    class OrderResult
+    public class OrderResult
     {
         public TradeType Type { get; set; }
         public double Price { get; set; }

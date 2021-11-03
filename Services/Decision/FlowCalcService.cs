@@ -14,12 +14,14 @@ namespace exmo_trader_bot_console.Services.Decision
         {
             FlowLine flowLine = new FlowLine();
 
-            FindTrendLine(candles, GetHighPrice, FlowLinePos.Higher, flowLine.UpperLine);
+            FindTrendLine(candles, GetHighPrice, FlowLinePos.Higher, out var upperLine);
+            flowLine.UpperLine = upperLine;
 
             if (flowLine.UpperLine == null)
                 throw new Exception("Can't find upper line of trend");
 
-            FindTrendLine(candles, GetLowPrice, FlowLinePos.Lower, flowLine.LowerLine);
+            FindTrendLine(candles, GetLowPrice, FlowLinePos.Lower, out var lowerLine);
+            flowLine.LowerLine = lowerLine;
 
             if (flowLine.LowerLine == null)
                 throw new Exception("Can't find lower line of trend");
@@ -27,13 +29,17 @@ namespace exmo_trader_bot_console.Services.Decision
             return flowLine;
         }
 
-        public FlowLinePos GetPricePosition(FlowLine flowLine, double price, int candleIndex)
+        public FlowLinePos GetPricePosition(FlowLine flowLine, double price, int candleIndex, double errorPercentRange = 0)
         {
-            var upperLine = CheckSingleLine(flowLine.UpperLine, price, candleIndex);
-            if (upperLine == FlowLinePos.Higher || upperLine == FlowLinePos.InArea) return FlowLinePos.Higher;
+            var upperLinePoint = GetValueOnLine(flowLine.UpperLine, candleIndex);
+            var errorPercentPoint = upperLinePoint * (100 - errorPercentRange) / 100;
 
-            var lowerLine = CheckSingleLine(flowLine.LowerLine, price, candleIndex);
-            if (lowerLine == FlowLinePos.Lower || lowerLine == FlowLinePos.InArea) return FlowLinePos.Lower;
+            if(errorPercentPoint <= price) return FlowLinePos.Higher;
+
+            var lowerLinePoint = GetValueOnLine(flowLine.LowerLine, candleIndex);
+            errorPercentPoint = lowerLinePoint * (100 + errorPercentRange) / 100;
+
+            if (errorPercentPoint >= price) return FlowLinePos.Lower;
 
             return FlowLinePos.InArea;
         }
@@ -70,16 +76,18 @@ namespace exmo_trader_bot_console.Services.Decision
 
         private double GetHighPrice(Candle candle)
         {
-            return candle.Close > candle.Open ? candle.Close : candle.Open;
+            return candle.High;
         }
 
         private double GetLowPrice(Candle candle)
         {
-            return candle.Close > candle.Open ? candle.Open : candle.Close;
+            return candle.Low;
         }
 
-        private void FindTrendLine(Candle[] candles, Func<Candle, double> getPrice, FlowLinePos flowLinePos, LineVector lineVectorRef)
+        private void FindTrendLine(Candle[] candles, Func<Candle, double> getPrice, FlowLinePos flowLinePos, out LineVector lineVectorRef)
         {
+            lineVectorRef = null;
+
             for (int i = 0; i < candles.Length - 1; i++)
             {
                 LineVector lineVector = new LineVector

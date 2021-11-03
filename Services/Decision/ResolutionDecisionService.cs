@@ -45,6 +45,7 @@ namespace exmo_trader_bot_console.Services.Decision
         private IObservable<OrderDecision> MakeDecision(Candle[] candles, IObservable<Trade[]> tradesStream)
         {
             var flowLine = _flowCalcService.CalcFlowLine(candles);
+            var chartSettings = _dataSettings.Chart.Single(c => c.Resolution == _resolution);
 
             return tradesStream.Select(trades =>
             {
@@ -55,7 +56,7 @@ namespace exmo_trader_bot_console.Services.Decision
                 var flowLineDiff = _flowCalcService.FlowPercentRange(flowLine, currentPos);
                 if (flowLineDiff < _dataSettings.MinDiff) return null;
 
-                var position = _flowCalcService.GetPricePosition(flowLine, lastTrade.Price, currentPos);
+                var position = _flowCalcService.GetPricePosition(flowLine, lastTrade.Price, currentPos, chartSettings.ErrorPercent);
                 if (position == FlowLinePos.Higher) return CreateDecisionObject(TradeType.Sell);
                 if (position == FlowLinePos.Lower) return CreateDecisionObject(TradeType.Buy);
 

@@ -29,7 +29,7 @@ namespace exmo_trader_bot_console.Services.EventRouter
         public IObservable<string> GetRouterStream(string collectionName, ResponseEvent responseEvent)
         {
             var result = _responseDictionary.TryGetValue(collectionName, out _);
-            if(result)
+            if(!result)
                 throw new ArgumentException("This collection does not exist in Event Router Service");
 
             return _responseDictionary[collectionName].Where(e => e.Event == responseEvent)

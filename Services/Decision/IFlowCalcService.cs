@@ -11,7 +11,7 @@ namespace exmo_trader_bot_console.Services.Decision
     interface IFlowCalcService
     {
         FlowLine CalcFlowLine(Candle[] candles);
-        FlowLinePos GetPricePosition(FlowLine flowLine, double price, int candleIndex);
+        FlowLinePos GetPricePosition(FlowLine flowLine, double price, int candleIndex, double errorPercentRange = 0);
         double FlowPercentRange(FlowLine flowLine, int index);
     }
 }

@@ -5,9 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using exmo_trader_bot_console.Models.Internal;
 using exmo_trader_bot_console.Models.OrderData;
+using exmo_trader_bot_console.Models.Settings;
 using exmo_trader_bot_console.Models.TradingData;
 using exmo_trader_bot_console.Models.Wallet;
-using exmo_trader_bot_console.Services.WalletService;
+using exmo_trader_bot_console.Services.Settings;
+using exmo_trader_bot_console.Services.Wallet;
 
 namespace exmo_trader_bot_console.Services.Logger
 {
@@ -15,61 +17,20 @@ namespace exmo_trader_bot_console.Services.Logger
     {
         private readonly IDictionary<TradingPair, PairWallet> _initialWallet;
         private readonly IWalletService _walletService;
+        private readonly SettingsModel _settingsModel;
 
-        public LoggerService(IWalletService walletService)
+        public LoggerService(IWalletService walletService, ISettingsService<SettingsModel> settingsService)
         {
             _walletService = walletService;
+            _settingsModel = settingsService.GetSettings();
             _initialWallet = new Dictionary<TradingPair, PairWallet>();
-            foreach (var key in walletService.Wallet.Keys)
+            foreach (var key in _settingsModel.Data)
             {
-                var pairWallet = new PairWallet(walletService.Wallet[key].Crypto, walletService.Wallet[key].Currency);
-                _initialWallet.Add(key, pairWallet);
+                var pairWallet = new PairWallet(0, key.CurrencyAmount);
+                _initialWallet.Add(key.Pair, pairWallet);
             }
 
             ShowBalance();
-        }
-
-        public void OnDecision(OrderDecision decision)
-        {
-            PrintDate();
-            WriteLine($"Decision was made: \"{decision.Description}\"", LoggerEvent.Info);
-            if(decision.Type == TradeType.Buy || decision.Type == TradeType.MarketBuyPrice || decision.Type == TradeType.MarketBuyQuantity)
-                WriteLine("Buy", LoggerEvent.Buy);
-            else if (decision.Type == TradeType.Sell || decision.Type == TradeType.MarketSellPrice ||
-                     decision.Type == TradeType.MarketSellQuantity)
-                WriteLine("Sell", LoggerEvent.Sell);
-            else
-                WriteLine("Unknown decision", LoggerEvent.Error);
-        }
-
-        public void OnWalletChange(WalletChange walletChange)
-        {
-            PrintDate();
-            WriteLine("Wallet changed");
-            WriteLine($"Pair: {walletChange.Pair.Crypto}_{walletChange.Pair.Currency}", LoggerEvent.Info);
-
-            if (walletChange.Changes.Currency < 0)
-                WriteLine(
-                    $"Bought crypto ({walletChange.Changes.Crypto}{walletChange.Pair.Crypto}) for {walletChange.Changes.Currency * -1}{walletChange.Pair.Currency}",
-                    LoggerEvent.Buy);
-            else if (walletChange.Changes.Crypto < 0)
-                WriteLine(
-                    $"Sold crypto ({walletChange.Changes.Crypto * -1}{walletChange.Pair.Crypto}) for {walletChange.Changes.Currency}{walletChange.Pair.Currency}",
-                    LoggerEvent.Sell);
-            else
-                WriteLine("Unknown changes", LoggerEvent.Error);
-
-            ShowBalance();
-        }
-
-        public void OnOrderResult(bool result)
-        {
-            PrintDate();
-            WriteLine("Order result is");
-            if(result)
-                WriteLine("Success", LoggerEvent.Info);
-            else
-                WriteLine("Error", LoggerEvent.Error);
         }
 
         public void OnInfo(string info, LoggerEvent loggerEvent)
@@ -93,25 +54,69 @@ namespace exmo_trader_bot_console.Services.Logger
             WriteLine(error.Message, LoggerEvent.Error);
         }
 
-        private void ShowBalance()
+        public void OnDecision(OrderDecision decision, bool orderResult)
+        {
+            PrintDate();
+
+            if (!orderResult)
+            {
+                WriteLine("Decision was refused on EXMO", LoggerEvent.Error);
+                return;
+            }
+
+            switch (decision.Type)
+            {
+                case TradeType.Buy:
+                    WriteLine($"New decision: BUY {decision.Pair.Crypto}_{decision.Pair.Currency}", LoggerEvent.Buy);
+                    break;
+
+                case TradeType.Sell:
+                    WriteLine($"New decision: SELL {decision.Pair.Crypto}_{decision.Pair.Currency}", LoggerEvent.Sell);
+                    break;
+            }
+        }
+
+        public void ShowBalance()
         {
             WriteLine();
             WriteLine("------------------");
 
             WriteLine("Current balance:");
-            foreach (var key in _walletService.Wallet.Keys)
+            foreach (var key in _settingsModel.Data)
             {
-                WriteLine($"Pair: {key.Crypto}_{key.Currency}", LoggerEvent.Info);
-                var cryptoDiff = _walletService.Wallet[key].Crypto - _initialWallet[key].Crypto;
-                var currencyDiff = _walletService.Wallet[key].Currency - _initialWallet[key].Currency;
+                var cryptoBalance = _walletService.GetBalance(key.Pair, TradeType.Sell);
+                var currencyBalance = _walletService.GetBalance(key.Pair, TradeType.Buy);
 
-                WriteLine($"{key.Crypto}: {_walletService.Wallet[key].Crypto} ({cryptoDiff})", cryptoDiff < 0 ? LoggerEvent.Sell : LoggerEvent.Buy);
-                WriteLine($"{key.Currency}: {_walletService.Wallet[key].Currency} ({currencyDiff})", currencyDiff < 0 ? LoggerEvent.Sell : LoggerEvent.Buy);
+                WriteLine($"Pair: {key.Pair.Crypto}_{key.Pair.Currency}", LoggerEvent.Info);
+                var cryptoDiff = cryptoBalance - _initialWallet[key.Pair].Crypto;
+                var currencyDiff = currencyBalance - _initialWallet[key.Pair].Currency;
+
+                WriteLine($"{key.Pair.Crypto}: {cryptoBalance} ({cryptoDiff})", cryptoDiff < 0 ? LoggerEvent.Sell : LoggerEvent.Buy);
+                WriteLine($"{key.Pair.Currency}: {currencyBalance} ({currencyDiff})", currencyDiff < 0 ? LoggerEvent.Sell : LoggerEvent.Buy);
                 WriteLine();
             }
 
             WriteLine("------------------");
             WriteLine();
+        }
+
+        public void OnOrder(Models.OrderData.OrderResult orderResult)
+        {
+            PrintDate();
+            WriteLine("Order was executed");
+
+            switch (orderResult.Type)
+            {
+                case TradeType.Buy:
+                    WriteLine($"BUY {orderResult.Quantity} {orderResult.Pair.Crypto} for {orderResult.Amount} {orderResult.Pair.Currency}", LoggerEvent.Buy);
+                    break;
+
+                case TradeType.Sell:
+                    WriteLine($"SELL {orderResult.Quantity} {orderResult.Pair.Crypto} for {orderResult.Amount} {orderResult.Pair.Currency}", LoggerEvent.Sell);
+                    break;
+            }
+
+            ShowBalance();
         }
 
         private void WriteLine(string message = "", LoggerEvent loggerEvent = LoggerEvent.Default)

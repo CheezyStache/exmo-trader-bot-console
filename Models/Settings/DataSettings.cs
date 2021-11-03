@@ -20,5 +20,6 @@ namespace exmo_trader_bot_console.Models.Settings
     {
         public int Resolution { get; set; }
         public int StartCandles { get; set; }
+        public double ErrorPercent { get; set; }
     }
 }

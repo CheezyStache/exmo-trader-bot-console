@@ -10,7 +10,6 @@ using exmo_trader_bot_console.Services.Mapper;
 using exmo_trader_bot_console.Services.OrderMaker;
 using exmo_trader_bot_console.Services.OrderResult;
 using exmo_trader_bot_console.Services.OrdersJson;
-using exmo_trader_bot_console.Services.RESTService;
 using exmo_trader_bot_console.Services.Settings;
 using exmo_trader_bot_console.Services.TradesJson;
 using exmo_trader_bot_console.Services.Wallet;
@@ -52,11 +51,12 @@ namespace exmo_trader_bot_console
                 .AddSingleton<IWalletService, WalletService>()
                 .AddSingleton<ILoggerService, LoggerService>()
                 .AddSingleton<IDecisionService, DecisionService>()
+                .AddSingleton<IDataStorageService, DataStorageService>()
+                .AddSingleton<IOrderResultService, OrderResultService>()
                 .AddScoped<ICandleHistoryService, CandleHistoryService>()
                 .AddScoped<ITradesJsonService, TradesJsonService>()
-                .AddScoped<IOrdersJsonService, OrdersJsonService>()
-                .AddScoped<IDataStorageService, DataStorageService>()
-                .AddScoped<IOrderResultService, OrderResultService>();
+                .AddScoped<IOrdersJsonService, OrdersJsonService>();
+
         }
     }
 }
