@@ -10,6 +10,7 @@ using exmo_trader_bot_console.Models.Decision;
 using exmo_trader_bot_console.Models.OrderData;
 using exmo_trader_bot_console.Models.Settings;
 using exmo_trader_bot_console.Models.TradingData;
+using exmo_trader_bot_console.Services.ChartDrawer;
 
 namespace exmo_trader_bot_console.Services.Decision
 {
@@ -21,6 +22,7 @@ namespace exmo_trader_bot_console.Services.Decision
         private readonly DataSettings _dataSettings;
         private readonly int _resolution;
         private readonly IFlowCalcService _flowCalcService;
+        private readonly IChartDrawerService _chartDrawerService; // for human readable tests
 
         public ResolutionDecisionService(DataSettings dataSettings, int resolution)
         {
@@ -28,6 +30,7 @@ namespace exmo_trader_bot_console.Services.Decision
             _resolution = resolution;
 
             _flowCalcService = new FlowCalcService();
+            _chartDrawerService = new ChartDrawerService();
 
             _orderDecisionSubject = new Subject<OrderDecision>();
         }
@@ -46,6 +49,7 @@ namespace exmo_trader_bot_console.Services.Decision
         {
             var flowLine = _flowCalcService.CalcFlowLine(candles);
             var chartSettings = _dataSettings.Chart.Single(c => c.Resolution == _resolution);
+            _chartDrawerService.DrawTrendLinesAndSave(candles, flowLine, $"{_dataSettings.Pair.Crypto}_{_dataSettings.Pair.Currency}", _resolution);
 
             return tradesStream.Select(trades =>
             {
