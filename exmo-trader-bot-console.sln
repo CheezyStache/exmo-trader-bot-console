@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30717.126
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "exmo-trader-bot-console", "exmo-trader-bot-console.csproj", "{D5005926-0829-4ADE-8C53-593CE3C4EA32}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "exmo-trader-bot-console", ".\exmo-trader-bot-console-old\exmo-trader-bot-console.csproj", "{D5005926-0829-4ADE-8C53-593CE3C4EA32}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExmoDataService", ".\ExmoDataService\ExmoDataService.csproj", "{D090E036-7FD0-4F40-AAD9-C95E66684045}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{D5005926-0829-4ADE-8C53-593CE3C4EA32}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D5005926-0829-4ADE-8C53-593CE3C4EA32}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D5005926-0829-4ADE-8C53-593CE3C4EA32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D090E036-7FD0-4F40-AAD9-C95E66684045}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D090E036-7FD0-4F40-AAD9-C95E66684045}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D090E036-7FD0-4F40-AAD9-C95E66684045}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D090E036-7FD0-4F40-AAD9-C95E66684045}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
